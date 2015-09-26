@@ -1,84 +1,125 @@
 <DOCTYPE html>
 <html>
   <head>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" charset="utf-8">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css" media="screen" title="no title" charset="utf-8">
-    <link rel="stylesheet" href="css/bootstrap.css" media="screen" title="no title" charset="utf-8">
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
-    <meta charset="utf-8">
-    <style>
-      html, body, #map-canvas {
-        height: 100%;
-        margin: 0px;
-        padding: 0px
-      }
-    </style>
-    <title>Place search pagination</title>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places"></script>
-    <!--script src="js/JSmods/googleMaps.js"></script-->
+    <title>ThereUR</title>
   </head>
   <body>
+
+    <!--div tag that holds the google map-->
     <div id="map-canvas"></div>
-    <div id="results">
-      <h2>Results</h2>
-      <ul id="places"></ul>
-      <button id="more">More results</button>
+
+    <div id="search-bar" class="input-group" group="controls">
+      <input id="search-input" data-bind="value: keyword, valueUpdate: 'afterkeydown'" type="text" class="form-control" placeholder="Search for...">
+      <div class="input-group-btn">
+        <button id="search-button" type="core" class="btn btn-default">
+          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
+        </button>
+      </div>
     </div>
-    <div id="search-bar">
-      <input id="pac-input" class="controls" type="text" placeholder="Search Box">
+    <!-- /input-group -->
+
+    <div id="results" data-bind="visible: listBoolean" group="controls">
+      <div class="title" data-bind="click: switchInfoBox">
+        <img height="30px" style="margin: 20px" src="images/info.png">
+        <h2>Nearby places</h2>
+        <!--img class="navButton" height="30px" style="margin: 20px" src="images/arrow-up.png" alt=""-->
+      </div>
+      <ul class="infolist" data-bind="foreach: displayedPlaces()">
+        <li data-bind="click: $root.clickMarker">
+          <div class="row">
+            <div class="col-md-8">
+
+            <p>
+              <div class="longtext">
+                <h3 class="longtext" data-bind="text: $data.name"></h3>
+              </div>
+            </p>
+
+            <p class="place-category"><span data-bind="text: $root.formattedType($data)"></span></p>
+            <p class="place-address"><span data-bind="text: $data.vicinity"></span></p>
+            <p>
+              <span data-bind="if: $data.opening_hours">
+                <span data-bind="if $data.opening_hours.open_now">
+                  <span style="color: #699dc5;">now open</span>
+                </span>
+              </span>
+            </p>
+
+            <p>
+              <div data-bind="if: $data.rating">
+
+                <div>
+                  <span style="color: #df6d15; padding-right: 3px;" data-bind="text: $data.rating"/></span>
+
+                  <div style="display: inline;" data-bind="foreach: $root.rateImg($data)">
+                    <img class="rate-star" data-bind="attr:{src: star}" />
+                  </div>
+
+                </div>
+
+              </div>
+              <span data-bind="ifnot: $data.rating">
+                <em>no rating available.</em>
+              </span>
+            </p>
+
+            </div>
+            <div class="col-md-4">
+
+            <p>
+              <span data-bind="if: $data.photos">
+                <img data-bind="attr:{src: photos[0].getUrl({maxHeight: 80})}" />
+              </span>
+              <span data-bind="ifnot: $data.photos">
+                <img style="height: 80" src="images/nophoto.jpg" />
+              </span>
+            </p>
+
+            </div>
+          </div>
+        </li>
+      </ul>
     </div>
-    <script src="js/JSmods/jquery-2.1.4.min.js"></script>
-    <script src="js/JSmods/knockout-3.3.0.js"></script>
-    <script src="js/app.js"></script>
+
+    <div id="btn-toolbar" group="controls">
+      <button id="reset" type="core" class="btn btn-default" style="display: block">
+        <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+      </button>
+      <div id="filters" class="btn-group" data-bind="foreach: icons" role="group" aria-label="plane">
+        <!--placeholder for filter buttons-->
+        <button type="button" class="btn btn-default">
+          <img width="23px" data-bind="attr: {src: icon}"/>
+        </button><br>
+      </div>
+      <button id="hide" type="core" class="btn btn-default" style="display: block">
+        <span class="glyphicon glyphicon-triangle-left" aria-hidden="true"></span>
+      </button>
+    </div>
+
+    <div id="photoViewer" style="display: none;">
+      <img id="close" class="navButton" src="images/close_button2.png"/>
+      <img id="prev" class="navButton" src="images/prev_button.png"/>
+      <img id="next" class="navButton" src="images/next_button.png"/>
+      <div id="frame" data-bind="foreach: placePhotos"> <!--class="photoScroll" temp removed as class-->
+        <img class="photo" style="margin: 0 1 0 1px;" data-bind="attr:{id: $index, src: $data.getUrl({maxHeight: 600})}" />
+      </div>
+      <span id="photoCounter" class="navButton"></span>
+
+
+    </div>
+    <!-- load scripts -->
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://knockoutjs.com/downloads/knockout-3.3.0.js"></script>
+    <script type="text/javascript" src="js/googlePlaceTypes.js"></script>
+
+    <!-- Temporary scripts MERGE them with app.js after finish-->
+    <!--script type="text/javascript" src="js/googleAPI.js"></script-->
+    <script type="text/javascript" src="js/app.js"></script>
+
   </body>
 </html>
-<!--
-<!DOCTYPE html>
-<html>
-    <head>
-        <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=false&libraries=places"></script>
-        <script type="text/javascript">
-        function initialize() {
-        var address = (document.getElementById('my-address'));
-        var autocomplete = new google.maps.places.Autocomplete(address);
-        autocomplete.setTypes(['geocode']);
-        google.maps.event.addListener(autocomplete, 'place_changed', function() {
-            var place = autocomplete.getPlace();
-            if (!place.geometry) {
-                return;
-            }
-
-        var address = '';
-        if (place.address_components) {
-            address = [
-                (place.address_components[0] && place.address_components[0].short_name || ''),
-                (place.address_components[1] && place.address_components[1].short_name || ''),
-                (place.address_components[2] && place.address_components[2].short_name || '')
-                ].join(' ');
-        }
-      });
-}
-function codeAddress() {
-    geocoder = new google.maps.Geocoder();
-    var address = document.getElementById("my-address").value;
-    geocoder.geocode( { 'address': address}, function(results, status) {
-      if (status == google.maps.GeocoderStatus.OK) {
-
-      alert("Latitude: "+results[0].geometry.location.lat());
-      alert("Longitude: "+results[0].geometry.location.lng());
-      }
-
-      else {
-        alert("Geocode was not successful for the following reason: " + status);
-      }
-    });
-  }
-google.maps.event.addDomListener(window, 'load', initialize);
-
-        </script>
-    </head>
-    <body>
-        <input type="text" id="my-address">
-        <button id="getCords" onClick="codeAddress();">getLat&Long</button>
-    </body>
-</html>
--->
