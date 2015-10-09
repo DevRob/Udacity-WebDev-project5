@@ -41,7 +41,7 @@ alsa there is a photo viewer if the place has photos you can hit the "photos" li
 * [piazza Front-End Web Dev Nanodegree forum](https://piazza.com/class/i36sqlrb9xu332)
 * [Dev Tools](https://developer.chrome.com/devtools/docs/rendering-settings)
 * [Dawoon Choi's project5 on github](https://github.com/DawoonC/dw-neighborhood)
-* [CSS Matic: The ultimate CSS tools for web designers](http://www.cssmatic.com/gradient-generator#'\-moz\-linear\-gradient\%28left\%2C\%20rgba\%2827\%2C82\%2C136\%2C1\%29\%200\%25\%2C\%20rgba\%28101\%2C138\%2C175\%2C1\%29\%2028\%25\%2C\%20rgba\%28105\%2C141\%2C177\%2C1\%29\%20100\%25\%29\%3B'
+* [CSS Matic: The ultimate CSS tools for web designers](http://www.cssmatic.com/gradient-generator#'\-moz\-linear\-gradient\%28left\%2C\%20rgba\%2827\%2C82\%2C136\%2C1\%29\%200\%25\%2C\%20rgba\%28101\%2C138\%2C175\%2C1\%29\%2028\%25\%2C\%20rgba\%28105\%2C141\%2C177\%2C1\%29\%20100\%25\%29\%3B')
 * [Pixlr Online photo editor](https://pixlr.com/editor/)
 
 * [Gulp plugins](http://gulpjs.com/plugins/)
