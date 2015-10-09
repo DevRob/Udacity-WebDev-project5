@@ -1,3 +1,4 @@
+"use strict";
 $(function() {
 
   function nhViewModel() {
@@ -5,57 +6,22 @@ $(function() {
     var self = this,
         map,
         infowindow,
+        mapBounds,
         mapCenter = {lat: 53.339821, lng: -6.2362889999999425}, // default map center
         categories = [],
-        //styles = [],
         styledMap,
-        marker_animation = google.maps.Animation.DROP,
         today = new Date();
 
-    self.nearByPlaces = ko.observableArray([]); //container for object returned by google map places API nearby search service
-    self.places = ko.observableArray([]); //container for object returned by google map places API searchBox service
+    self.nearByPlaces = ko.observableArray([]);
+    self.places = ko.observableArray([]); //container for nearby places objects
     self.markers = ko.observableArray([]); //container for marker objects
     self.radius = ko.observable(2000); //neighborhood radius
-    self.keyword = ko.observable(""); //keyword to filter markers and places
-    self.placeReviews = ko.observableArray([]); //container for place review objects returned by google map places API getDetails() service
-    self.placePhotos = ko.observableArray([]); //container for place photo urls returned by google map places API getDetails() service
-    self.placeInFocus = ko.observable(); //place object container when opening photos and reviews via infowindows
-
-    self.address = function(place) {
-      /*
-        return place address from place object
-      */
-      if (place.vicinity) {
-        return place.vicinity;
-      } else {
-        return place.formatted_address;
-      }
-    };
-
-    self.icons = ko.computed(function() {
-      /*
-        return icons for the btn-toolbar
-      */
-      var iconSet = new Set();
-      var iconDict = [];
-
-
-      for (var idx in self.nearByPlaces()) {
-        if (idx) {
-        	iconSet.add(self.nearByPlaces()[idx].icon);
-        }
-      }
-
-      iconSet.forEach(function(icon) {
-        iconDict.push({"icon": icon});
-      });
-      return iconDict;
-    });
+    self.keyword = ko.observable("");
+    self.switchInfoBox = ko.observable(true);
+    self.listBoolean = ko.observable(true);
+    self.placePhotos = ko.observableArray([]);
 
     self.rateImg = function(place) {
-      /*
-        chain together the rating stars based on place rating.
-      */
       var rating = Math.round(place.rating * 2)/2;
       var imgHolder = [];
 
@@ -63,20 +29,29 @@ $(function() {
         imgHolder.push({"star" : "images/full-star.png"});
       }
 
-      if (rating - parseInt(rating) !== 0) {
+      if (rating - parseInt(rating) != 0) {
         imgHolder.push({"star" : "images/half-star.png"});
       }
 
-      for (i = 0; i < parseInt(5 - rating); i++){
+      for (var i = 0; i < parseInt(5 - rating); i++){
         imgHolder.push({"star" : "images/empty-star.png"});
       }
       return imgHolder;
-    };
+    }
+
+    self.icons = ko.computed(function() {
+      var iconSet = new Set();
+      var iconDict = [];
+      for (var idx in self.nearByPlaces()) {
+        iconSet.add(self.nearByPlaces()[idx].icon);
+      }
+      iconSet.forEach(function(icon) {
+        iconDict.push({"icon": icon});
+      })
+      return iconDict;
+    });
 
     self.displayedPlaces = function() {
-      /*
-        filter markers and places based on keyword
-      */
       var places = [];
       var keyword = self.keyword().toLowerCase();
       var actualPlaces = [];
@@ -87,35 +62,67 @@ $(function() {
         actualPlaces = self.places();
       }
 
-      if (self.keyword() !== "") {
+      if (self.keyword() != "") {
         for (var idx in actualPlaces) {
 
           if (actualPlaces[idx].name.toLowerCase().indexOf(keyword) != -1 ||
               actualPlaces[idx].types[0].toLowerCase().indexOf(keyword) != -1) {
-                marker_animation = null;
                 places.push(actualPlaces[idx]);
           }
         }
-      } else {
-        places = actualPlaces;
-      }
-      addMarkers(places);
+      } else {places = actualPlaces;}
       return places;
-    };
+    }
 
     self.formattedType = function(data) {
-      /*
-       replace "_ & -" to space and first letter to uppercase in place type
-       example: art_gallery => Art gallery
-      */
       var formattedType = data.types[0].replace(/[_-]/g, " ");
       return formattedType.charAt(0).toUpperCase() + formattedType.substr(1, formattedType.length);
-    };
+    }
+
+    var styles = [
+    /*{
+      "featureType": "poi.park",
+      "stylers": [
+        { "gamma": 0.91 },
+        { "saturation": 18 },
+        { "lightness": -33 },
+        { "hue": "#22ff00" }
+      ]
+    },{
+      "featureType": "poi.business",
+      "stylers": [
+        { "gamma": 0.71 },
+        { "saturation": 28 },
+        { "lightness": -13 },
+        { "hue": "#1900ff" }
+      ]
+    },{
+      "featureType": "poi.medical",
+      "stylers": [
+        { "hue": "#ff0011" },
+        { "saturation": 45 },
+        { "lightness": -41 },
+        { "gamma": 0.9 }
+      ]
+    },{
+      "featureType": "poi.school",
+      "stylers": [
+        { "lightness": -16 },
+        { "hue": "#ffb300" },
+        { "gamma": 0.64 },
+        { "saturation": 50 }
+      ]
+    },{
+      "featureType": "poi.sports_complex",
+      "stylers": [
+        { "hue": "#0800ff" },
+        { "gamma": 0.41 },
+        { "lightness": -49 }
+      ]
+    }*/
+  ];
 
     function initMap() {
-      /*
-        google map initialization
-      */
       var mapOptions = {
         center: mapCenter,
         zoom: 14,
@@ -128,7 +135,6 @@ $(function() {
       infowindow = new google.maps.InfoWindow({
         pixelOffset: new google.maps.Size(-23, -10),
       });
-
       styledMap = new google.maps.StyledMapType(styles,{name: "Styled Map"});
       map.mapTypes.set('map_style', styledMap);
       map.setMapTypeId('map_style');
@@ -138,9 +144,7 @@ $(function() {
     initMap();
 
     function getCurrentLocation() {
-      /*
-        Locate user using geolocation
-      */
+      // Locate user
       if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(function(position) {
             mapCenter = {
@@ -155,7 +159,6 @@ $(function() {
         } else {
           // Browser doesn't support Geolocation
           handleLocationError(false, infowindow, map.getCenter());
-          getNearbyPlaces(mapCenter);
         }
     }
 
@@ -167,9 +170,6 @@ $(function() {
     getCurrentLocation();
 
     function getNearbyPlaces(center) {
-      /*
-        google maps places API search pagination request
-      */
       self.nearByPlaces([]);
 
       var service = new google.maps.places.PlacesService(map);
@@ -182,7 +182,7 @@ $(function() {
 
     function processResults(results, status, pagination) {
       var bounds = new google.maps.LatLngBounds();
-      //var placesList = document.getElementById('places');
+      var placesList = document.getElementById('places');
       if (status !== google.maps.places.PlacesServiceStatus.OK) {
         return;
       } else {
@@ -190,6 +190,7 @@ $(function() {
             if (place.types[place.types.length - 1] != "political") {
               self.nearByPlaces.push(place);
               bounds.extend(place.geometry.location);
+              addMarkers(self.nearByPlaces());
             }
           }
         map.fitBounds(bounds);
@@ -198,9 +199,6 @@ $(function() {
     }
 
     function initAutocomplete() {
-      /*
-        google maps places API autocomplete service
-      */
       self.places([]);
       // Create the search box and link it to the UI element.
       var input = document.getElementById('search-input');
@@ -214,39 +212,34 @@ $(function() {
 
       // Listen for the event fired when the user selects a prediction and retrieve
       // more details for that place.
-      searchBox.addListener('places_changed', boxSearch);
-      categories = [];
-
-      function boxSearch() {
+      searchBox.addListener('places_changed', function() {
         var searchedPlaces = searchBox.getPlaces();
         self.places(searchedPlaces);
 
-        if (self.places().length === 0) {
+        if (self.places().length == 0) {
           return;
         }
         else if (self.places().length == 1) {
           getNearbyPlaces(self.places()[0].geometry.location);
           self.nearByPlaces().push(searchedPlaces[0]);
         }
-        document.getElementById('search-input').value = "";
-        self.keyword("");
-        marker_animation = google.maps.Animation.DROP;
-      }
+      });
+      categories = [];
     }
 
     initAutocomplete();
 
     function addMarkers(places) {
-      /*
-        add markers to the map
-      */
+      document.getElementById('search-input').value = "";
+      self.keyword("");
+      // Clear out the old markers.
       self.markers().forEach(function(marker) {
-        // Clear out the old markers.
         marker.setMap(null);
       });
       self.markers([]);
 
       // For each place, get the icon, name and location.
+      mapBounds = new google.maps.LatLngBounds();
       places.forEach(function(place) {
         var icon = {
           url: place.icon,
@@ -261,7 +254,7 @@ $(function() {
           map: map,
           icon: icon,
           title: place.name,
-          animation: marker_animation,
+          animation: google.maps.Animation.DROP,
           position: place.geometry.location
         });
 
@@ -281,14 +274,20 @@ $(function() {
 
         google.maps.event.addListener(marker, 'click', function() {
           addInfowindow(place, marker);
+          //map.setZoom(15);
         });
+
+        if (place.geometry.viewport) {
+          // Only geocodes have viewport.
+          mapBounds.union(place.geometry.viewport);
+        } else {
+          mapBounds.extend(place.geometry.location);
+        }
       });
+      map.fitBounds(mapBounds);
     }
 
     function addInfowindow(place, marker) {
-      /*
-        get details about place corresponded to the clicked marker and build the infowindow
-      */
       var service = new google.maps.places.PlacesService(map);
       service.getDetails({
         placeId: place.place_id
@@ -296,35 +295,24 @@ $(function() {
         getWikiExtract(place);
         if (status === google.maps.places.PlacesServiceStatus.OK) {
           infowindow.setContent(
-            /*
-              dynamically generated info window content
-            */
-            '<div id="infoWindow" style="width: 220px; font-size: 14px; display: none;"><p><h3>' + place.name + '</h3></p>' +
+            '<div id="infoWindow" style="width: 200px; display: none;"><strong>' + place.name + '</strong>' +
             '<hr>' +
-            '<p><span style="font-size: 15px">' + place.formatted_address + '</span></p>' +
-
-            '<p><span style="color: #4a7ea7; font-weight: bold;">' + getOpeningHrs(place)  + '</span></p>'+
+            '<span">' + place.formatted_address + '</span>' +
             '<br>' +
+            '<span style="color: #275076; font-size: 12px; font-style: italic">' + getOpeningHrs(place)  + '</span>'+
+            '<br><br>' +
             '<div id="wiki" style="white-space: normal;"><span></span></div>' +
             '<br>' +
             getRating(place) +
-
-            '<p><span>' + getPhone(place) + '</span></p>' +
-
-            '<p><div class="longtext"><a href="'+ getWeb(place) +'" target="_blank">' + getWeb(place) + '<a></div>' +
-            getPhotoes(place) + '</div></p>'
+            '<br>' +
+            '<span>' + getPhone(place) + '</span>' +
+            '<br>' +
+            '<div class="longtext"><a href="'+ getWeb(place) +'" target="_blank">' + getWeb(place) + '<a></div>' +
+            getPhotoes(place) + '</div>'
           );
-
           infowindow.open(map, marker);
-
           $('#infoWindow').fadeIn(1000);
-
-          self.placePhotos(place.photos);
-
           document.getElementById('photoLink').addEventListener("click", function(){
-            /*
-              open photo viewer
-            */
             $('#photoViewer').show();
 
             var numberOfPhotos = place.photos.length;
@@ -342,11 +330,8 @@ $(function() {
             });
 
             function updPhoto(direction) {
-              /*
-                update which photo to be shown
-              */
               photoIdx += direction;
-              if (photoIdx === 0) {
+              if (photoIdx == 0) {
                 $('#prev').hide();
                 $('#next').show();
               } else if (photoIdx == numberOfPhotos - 1){
@@ -355,45 +340,23 @@ $(function() {
                 $('#prev').show();
                 $('#next').show();
               }
-              $('#frame').children().eq(photoIdx - direction).hide();
-              $('#frame').children().eq(photoIdx).show();
-              updCounter();
+              $('#frame').children().eq(photoIdx - direction).fadeOut(400);
+              setTimeout(function(){ $('#frame').children().eq(photoIdx).fadeIn(600); }, 400);
+              updCounter()
             }
 
             function updCounter() {
               $('#photoCounter').text((photoIdx + 1) + " / " + numberOfPhotos);
             }
 
-            $('#close-photo').click(function() {
+            $('#close').click(function() {
               $('#frame').children().hide();
               $('#photoViewer').hide();
               photoIdx = 0;
             });
 
           });
-
-          document.getElementById('reviewlink').addEventListener("click", function(){
-            /*
-              open review page
-            */
-            self.placeReviews([]);
-            self.placeInFocus(place);
-            var reviews = [];
-            place.reviews.forEach(function(review) {
-                if (review.text !== "") {
-                  reviews.push(review);
-                }
-            });
-
-            self.placeReviews(reviews);
-
-            $('#review-page').show();
-            $('#reviews').children().show();
-            $('#close-review').click(function() {
-              $('#reviews').children().hide();
-              $('#review-page').hide();
-            });
-          });
+          self.placePhotos(place.photos);
         }
       });
       google.maps.event.addListener(infowindow,'closeclick',function(){
@@ -404,9 +367,6 @@ $(function() {
     }
 
     function getOpeningHrs(place) {
-      /*
-        get opening hours from place object
-      */
       if (place.opening_hours) {
         return place.opening_hours.weekday_text[today.getDay() - 1  ];
       } else {
@@ -415,18 +375,12 @@ $(function() {
     }
 
     function getRating(place) {
-      /*
-        get rating from place object and dinamically chain together the rating tag
-        add rating stars and review link
-      */
       var ratingTag = "";
       var starHolder = self.rateImg(place);
       if (place.rating) {
-        ratingTag = '<div><span style="color: #df6d15; padding-right: 3px;">' + place.rating + '</span>';
+        ratingTag = '<div><span style="color: #df6d15; padding-right: 3px;">' + place.rating + '</span>'
         for (var i in starHolder) {
-          if (i) {
-           ratingTag += '<img class="rate-star" src="' + starHolder[i].star + '" />';
-          }
+          ratingTag += '<img class="rate-star" src="' + starHolder[i].star + '" />'
         }
 
         return ratingTag + '<a id="reviewlink" style="padding-left: 15px;" href="#"">reviews</a></div>';
@@ -436,9 +390,6 @@ $(function() {
     }
 
     function getPhone(place) {
-      /*
-        get phone number from place object
-      */
       if (place.international_phone_number) {
         return place.international_phone_number;
       } else {
@@ -447,9 +398,6 @@ $(function() {
     }
 
     function getWeb(place) {
-      /*
-        get website from place object
-      */
       if (place.website) {
         return place.website;
       } else {
@@ -458,9 +406,6 @@ $(function() {
     }
 
     function getPhotoes(place) {
-      /*
-        get photo urls from place object
-      */
       if (place.photos) {
         if (place.photos.length > 1 ) {
         return '<a id="photoLink" href="#"">photos<a>';
@@ -469,14 +414,11 @@ $(function() {
     }
 
     function getWikiExtract(place) {
-      /*
-        get wikipedia page extract and link based on place name
-      */
-      var searchParam = place.name.replace(/[\s,]/g, "%20");
+      var searchParam = place.name.replace(/[\s,]/g, "%20")
       var wiki = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=" + searchParam;
 
       var wikiTimeOut = setTimeout(function() {
-        console.log("Wiki API failed to load."); //Could notify user but did not seemed necessary, anyhow it's useful for debug
+        console.log("Wiki API failed to load.");
       }, 3000);
 
       $.ajax({
@@ -485,7 +427,7 @@ $(function() {
         success: function(response) {
           var wikiTag = document.getElementById('wiki');
           for (var page in response.query.pages) {
-            if (response.query.pages[page].extract === undefined || response.query.pages[page].extract === "") {
+            if (response.query.pages[page].extract == undefined || response.query.pages[page].extract == "") {
 
             }else {
                 wikiTag.innerHTML = '<span>' + response.query.pages[page].extract.substring(0, 60) +
@@ -498,74 +440,57 @@ $(function() {
       });
     }
 
+    // trigger click event to markers when list item is clicked
     self.clickMarker = function(place) {
-      /*
-        trigger click event to markers when list item is clicked
-      */
-      var name = place.name.toLowerCase(),
-          width = window.innerWidth,
-          offsetX = 0.0065,
-          offsetY = 0.003;
-
-      if (width < 995) {
-        offsetX = 0;
-        offsetY = 0.006;
-      }
-
+      var name = place.name.toLowerCase();
       self.markers().forEach(function(marker) {
         if (marker.title.toLowerCase() === name) {
           google.maps.event.trigger(marker, 'click');
-          map.setCenter({lat: marker.position.J + offsetY, lng: marker.position.M + offsetX});
+
+          map.panTo(marker.position);
         }
       });
-    };
+    }
 
     $('#filters').on('click', 'button', function () {
-      /*
-        call google map API nearby serach with altered categories based on which icon pressed
-        unfortunatelly there is an inconsistency with how google call place types and the
-        "corresponding image" see example gym = type, fitness = img
-      */
-       marker_animation = google.maps.Animation.DROP;
+
        var fileName = $(this).children('img').attr('src').split("/");
        var rawCategory = fileName[fileName.length - 1].split("-")[0];
        categories = [];
 
        if (rawCategory == "fitness") {
-         categories.push("gym");         // <--not nice but necessary because the inconsistency
+         categories.push("gym");
        }
 
        for (var idx in googlePlaceTypes) {
-         //fetch the place type from googlePlaceTypes based on icon url name
          if (googlePlaceTypes[idx].toLowerCase().indexOf(rawCategory.substring(0, 4)) != -1) {
                categories.push(googlePlaceTypes[idx]);
          }
        }
+       //console.log("actual: ", categories);
        getNearbyPlaces(map.getCenter());
-    });
+      });
 
     $('#reset').on('click', function() {
       categories = [];
       getNearbyPlaces(map.getCenter());
-    });
+    })
+
   }
 
   ko.applyBindings(new nhViewModel());
 
+  $('[group~=controls]').show(1000);
   $('#hide').click(function() {
-    /*
-      handle btn-toolbar click events
-    */
       var glyph = '', currentGlyph = $(this).children('span').attr('class');
       if (currentGlyph.slice(29) === 'left') {
-        glyph = currentGlyph.replace('left', 'right');
+        glyph = currentGlyph.replace('left', 'right')
       }
       else {
-        glyph = currentGlyph.replace('right', 'left');
+        glyph = currentGlyph.replace('right', 'left')
       }
 
       $(this).siblings('div').animate({width: "toggle"}, 500);
       $(this).children('span').attr('class', glyph);
     });
-
 });
