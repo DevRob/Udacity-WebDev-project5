@@ -228,6 +228,13 @@ $(function() {
           getNearbyPlaces(self.places()[0].geometry.location);
           self.nearByPlaces().push(searchedPlaces[0]);
         }
+        else {
+          var bounds = new google.maps.LatLngBounds();
+          self.places().forEach(function(place) {
+            bounds.extend(place.geometry.location);
+            map.fitBounds(bounds);
+          });
+        }
         document.getElementById('search-input').value = "";
         self.keyword("");
         marker_animation = google.maps.Animation.DROP;
@@ -541,10 +548,12 @@ $(function() {
                categories.push(googlePlaceTypes[idx]);
          }
        }
+
        getNearbyPlaces(map.getCenter());
     });
 
     $('#reset').on('click', function() {
+      self.places([]);
       categories = [];
       getNearbyPlaces(map.getCenter());
     });
