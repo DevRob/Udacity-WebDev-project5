@@ -1,3 +1,4 @@
+"use strict";
 $(function() {
 
   function nhViewModel() {
@@ -5,9 +6,10 @@ $(function() {
     var self = this,
         map,
         infowindow,
+        mapBounds,
         mapCenter = {lat: 53.339821, lng: -6.2362889999999425}, // default map center
         categories = [],
-        //styles = [],
+        styles = [],
         styledMap,
         marker_animation = google.maps.Animation.DROP,
         today = new Date();
@@ -26,11 +28,11 @@ $(function() {
         return place address from place object
       */
       if (place.vicinity) {
-        return place.vicinity;
+        return place.vicinity
       } else {
-        return place.formatted_address;
+        return place.formatted_address
       }
-    };
+    }
 
     self.icons = ko.computed(function() {
       /*
@@ -38,14 +40,9 @@ $(function() {
       */
       var iconSet = new Set();
       var iconDict = [];
-
-
       for (var idx in self.nearByPlaces()) {
-        if (idx) {
-        	iconSet.add(self.nearByPlaces()[idx].icon);
-        }
+        iconSet.add(self.nearByPlaces()[idx].icon);
       }
-
       iconSet.forEach(function(icon) {
         iconDict.push({"icon": icon});
       });
@@ -63,15 +60,15 @@ $(function() {
         imgHolder.push({"star" : "images/full-star.png"});
       }
 
-      if (rating - parseInt(rating) !== 0) {
+      if (rating - parseInt(rating) != 0) {
         imgHolder.push({"star" : "images/half-star.png"});
       }
 
-      for (i = 0; i < parseInt(5 - rating); i++){
+      for (var i = 0; i < parseInt(5 - rating); i++){
         imgHolder.push({"star" : "images/empty-star.png"});
       }
       return imgHolder;
-    };
+    }
 
     self.displayedPlaces = function() {
       /*
@@ -87,7 +84,7 @@ $(function() {
         actualPlaces = self.places();
       }
 
-      if (self.keyword() !== "") {
+      if (self.keyword() != "") {
         for (var idx in actualPlaces) {
 
           if (actualPlaces[idx].name.toLowerCase().indexOf(keyword) != -1 ||
@@ -101,7 +98,7 @@ $(function() {
       }
       addMarkers(places);
       return places;
-    };
+    }
 
     self.formattedType = function(data) {
       /*
@@ -110,7 +107,7 @@ $(function() {
       */
       var formattedType = data.types[0].replace(/[_-]/g, " ");
       return formattedType.charAt(0).toUpperCase() + formattedType.substr(1, formattedType.length);
-    };
+    }
 
     function initMap() {
       /*
@@ -182,7 +179,7 @@ $(function() {
 
     function processResults(results, status, pagination) {
       var bounds = new google.maps.LatLngBounds();
-      //var placesList = document.getElementById('places');
+      var placesList = document.getElementById('places');
       if (status !== google.maps.places.PlacesServiceStatus.OK) {
         return;
       } else {
@@ -221,7 +218,7 @@ $(function() {
         var searchedPlaces = searchBox.getPlaces();
         self.places(searchedPlaces);
 
-        if (self.places().length === 0) {
+        if (self.places().length == 0) {
           return;
         }
         else if (self.places().length == 1) {
@@ -346,7 +343,7 @@ $(function() {
                 update which photo to be shown
               */
               photoIdx += direction;
-              if (photoIdx === 0) {
+              if (photoIdx == 0) {
                 $('#prev').hide();
                 $('#next').show();
               } else if (photoIdx == numberOfPhotos - 1){
@@ -357,7 +354,7 @@ $(function() {
               }
               $('#frame').children().eq(photoIdx - direction).hide();
               $('#frame').children().eq(photoIdx).show();
-              updCounter();
+              updCounter()
             }
 
             function updCounter() {
@@ -380,7 +377,7 @@ $(function() {
             self.placeInFocus(place);
             var reviews = [];
             place.reviews.forEach(function(review) {
-                if (review.text !== "") {
+                if (review.text != "") {
                   reviews.push(review);
                 }
             });
@@ -422,11 +419,9 @@ $(function() {
       var ratingTag = "";
       var starHolder = self.rateImg(place);
       if (place.rating) {
-        ratingTag = '<div><span style="color: #df6d15; padding-right: 3px;">' + place.rating + '</span>';
+        ratingTag = '<div><span style="color: #df6d15; padding-right: 3px;">' + place.rating + '</span>'
         for (var i in starHolder) {
-          if (i) {
-           ratingTag += '<img class="rate-star" src="' + starHolder[i].star + '" />';
-          }
+          ratingTag += '<img class="rate-star" src="' + starHolder[i].star + '" />'
         }
 
         return ratingTag + '<a id="reviewlink" style="padding-left: 15px;" href="#"">reviews</a></div>';
@@ -472,7 +467,7 @@ $(function() {
       /*
         get wikipedia page extract and link based on place name
       */
-      var searchParam = place.name.replace(/[\s,]/g, "%20");
+      var searchParam = place.name.replace(/[\s,]/g, "%20")
       var wiki = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=" + searchParam;
 
       var wikiTimeOut = setTimeout(function() {
@@ -485,7 +480,7 @@ $(function() {
         success: function(response) {
           var wikiTag = document.getElementById('wiki');
           for (var page in response.query.pages) {
-            if (response.query.pages[page].extract === undefined || response.query.pages[page].extract === "") {
+            if (response.query.pages[page].extract == undefined || response.query.pages[page].extract == "") {
 
             }else {
                 wikiTag.innerHTML = '<span>' + response.query.pages[page].extract.substring(0, 60) +
@@ -502,23 +497,14 @@ $(function() {
       /*
         trigger click event to markers when list item is clicked
       */
-      var name = place.name.toLowerCase(),
-          width = window.innerWidth,
-          offsetX = 0.0065,
-          offsetY = 0.003;
-
-      if (width < 995) {
-        offsetX = 0;
-        offsetY = 0.006;
-      }
-
+      var name = place.name.toLowerCase();
       self.markers().forEach(function(marker) {
         if (marker.title.toLowerCase() === name) {
           google.maps.event.trigger(marker, 'click');
-          map.setCenter({lat: marker.position.J + offsetY, lng: marker.position.M + offsetX});
+          map.setCenter({lat: marker.position.J + 0.006, lng: marker.position.M + 0.006})
         }
       });
-    };
+    }
 
     $('#filters').on('click', 'button', function () {
       /*
@@ -547,7 +533,7 @@ $(function() {
     $('#reset').on('click', function() {
       categories = [];
       getNearbyPlaces(map.getCenter());
-    });
+    })
   }
 
   ko.applyBindings(new nhViewModel());
@@ -558,10 +544,10 @@ $(function() {
     */
       var glyph = '', currentGlyph = $(this).children('span').attr('class');
       if (currentGlyph.slice(29) === 'left') {
-        glyph = currentGlyph.replace('left', 'right');
+        glyph = currentGlyph.replace('left', 'right')
       }
       else {
-        glyph = currentGlyph.replace('right', 'left');
+        glyph = currentGlyph.replace('right', 'left')
       }
 
       $(this).siblings('div').animate({width: "toggle"}, 500);

@@ -14,20 +14,16 @@
 
     <div id="search-bar" class="input-group" group="controls">
       <input id="search-input" data-bind="value: keyword, valueUpdate: 'afterkeydown'" type="text" class="form-control" placeholder="Search for...">
-      <div class="input-group-btn">
-        <button id="search-button" type="core" class="btn btn-default">
-          <span class="glyphicon glyphicon-search" aria-hidden="true"></span>
-        </button>
-      </div>
     </div>
-    <!-- /input-group -->
 
-    <div id="results" data-bind="visible: listBoolean" group="controls">
-      <div class="title" data-bind="click: switchInfoBox">
-        <img height="30px" style="margin: 20px" src="images/info.png">
+    <!-- place searcs result -->
+    <div id="results" group="controls">
+
+      <div class="title">
+        <img height="30px" style="margin: 15px" src="images/info.jpg">
         <h2>Nearby places</h2>
-        <!--img class="navButton" height="30px" style="margin: 20px" src="images/arrow-up.png" alt=""-->
       </div>
+
       <ul class="infolist" data-bind="foreach: displayedPlaces()">
         <li data-bind="click: $root.clickMarker">
           <div class="row">
@@ -40,20 +36,14 @@
             </p>
 
             <p class="place-category"><span data-bind="text: $root.formattedType($data)"></span></p>
-            <p class="place-address"><span data-bind="text: $data.vicinity"></span></p>
-            <p>
-              <span data-bind="if: $data.opening_hours">
-                <span data-bind="if $data.opening_hours.open_now">
-                  <span style="color: #699dc5;">now open</span>
-                </span>
-              </span>
-            </p>
+
+            <p class="place-address"><span data-bind="text: $root.address($data)"></span></p>
 
             <p>
               <div data-bind="if: $data.rating">
 
                 <div>
-                  <span style="color: #df6d15; padding-right: 3px;" data-bind="text: $data.rating"/></span>
+                  <span class="rating-number" data-bind="text: $data.rating"/></span>
 
                   <div style="display: inline;" data-bind="foreach: $root.rateImg($data)">
                     <img class="rate-star" data-bind="attr:{src: star}" />
@@ -83,7 +73,7 @@
           </div>
         </li>
       </ul>
-    </div>
+    </div><!-- end of place searcs result -->
 
     <div id="btn-toolbar" group="controls">
       <button id="reset" type="core" class="btn btn-default" style="display: block">
@@ -101,24 +91,68 @@
     </div>
 
     <div id="photoViewer" style="display: none;">
-      <img id="close" class="navButton" src="images/close_button2.png"/>
+      <img id="close-photo" class="navButton" src="images/close_button.png"/>
       <img id="prev" class="navButton" src="images/prev_button.png"/>
       <img id="next" class="navButton" src="images/next_button.png"/>
-      <div id="frame" data-bind="foreach: placePhotos"> <!--class="photoScroll" temp removed as class-->
+      <div id="frame" data-bind="foreach: placePhotos">
         <img class="photo" style="margin: 0 1 0 1px;" data-bind="attr:{id: $index, src: $data.getUrl({maxHeight: 600})}" />
       </div>
       <span id="photoCounter" class="navButton"></span>
-
-
     </div>
+
+    <!--review page -->
+    <div id="review-page" style="display: none;">
+
+      <img id="close-review" class="navButton" src="images/close_button.png"/>
+      <div id="review-container">
+
+        <div id="review-title" data-bind="with: placeInFocus">
+
+          <p>
+            <div class="longtext">
+              <h1 data-bind="text: $data.name"></h1>
+            </div>
+          </p>
+
+          <p class="greytext"><span data-bind="text: $data.formatted_address"></span></p>
+
+          <p>
+
+            <div>
+              <span></span>
+              <span class="rating-number" style="font-size: 25px;" data-bind="text: $data.rating"/></span>
+
+              <div style="display: inline;" data-bind="foreach: $root.rateImg($data)">
+                <img style="height: 25px;" class="rate-star" data-bind="attr:{src: star}" />
+              </div>
+            </div>
+
+        </div>
+
+        <div id="reviews" data-bind="foreach: placeReviews">
+          <strong style="display: inline" data-bind="text: $data.author_name"></strong>
+          <div style="display: inline">
+            <span class="rating-number" data-bind="text: $data.rating"/></span>
+
+            <div style="display: inline;" data-bind="foreach: $root.rateImg($data)">
+              <img class="rate-star" data-bind="attr:{src: star}" />
+            </div>
+
+          </div>
+
+          <p  style="margin-bottom: 20px;">
+            <span class="review" data-bind="text: $data.text"></span>
+          </p>
+
+        </div>
+
+      </div>
+    </div> <!--end review page -->
     <!-- load scripts -->
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="http://knockoutjs.com/downloads/knockout-3.3.0.js"></script>
     <script type="text/javascript" src="js/googlePlaceTypes.js"></script>
-
-    <!-- Temporary scripts MERGE them with app.js after finish-->
-    <!--script type="text/javascript" src="js/googleAPI.js"></script-->
     <script type="text/javascript" src="js/app.js"></script>
 
   </body>
