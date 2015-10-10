@@ -17,7 +17,7 @@ Neighborhood map project
 You can even type "sushi near philly" or "gym near Manhattan" that case the search gonna return the nearby sushi restaurants / gym in the area you searchrd for.
 Searchbar has an autocomplete feature as well, you need to choose from the dropdown with mouse or up-down arrows and hit enter. if you dont choose from autocomplete options and hit enter it will try to predict your search goal - note that the system needs at least 3 letters to able to predict your search. 
 
-You can filter the places returned by the search simple typing in the searchbar it will update the markers and the placelist on keydown (can search for name or type "bar, restaurant, takeaway ....").
+   You can filter the places returned by the search simple typing in the searchbar it will update the markers and the placelist on keydown (can search for name or type "bar, restaurant, takeaway ....").
 
 * Button toolbar:
 
