@@ -531,8 +531,9 @@ $(function() {
       /*
         call google map API nearby serach with altered categories based on which icon pressed
         unfortunatelly there is an inconsistency with how google call place types and the
-        "corresponding image" see example gym = type, fitness = img
+        "corresponding image" see example typename = gym,  imgname = fitness
       */
+      self.places([]);
        marker_animation = google.maps.Animation.DROP;
        var fileName = $(this).children('img').attr('src').split("/");
        var rawCategory = fileName[fileName.length - 1].split("-")[0];
