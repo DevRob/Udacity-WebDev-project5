@@ -1,9 +1,9 @@
 Neighborhood map project
 
 ###Setting up Project:
-   I installed node.js and gulp than re-organised the project folder so all the original HTML/CSS/JavaScript/images is in the 'Dev' folder. The system set up in a way that if I start gulp it will start a listener and will compress any element changed in the 'Dev' folder and move it in the right place in the project folder. <br/>Check ['Dev'](https://github.com/DevRob/Udacity-WebDev-project5/tree/master/Dev) folder for commented readable codes.
+   I'm using node.js and gulp so all the original, readable and commented HTML/CSS/JavaScript/image files are in the 'Dev' folder. The system set up in a way that if I start gulp it will start a listener and will compress any element changed in the 'Dev' folder and move it in the right place in the project folder. <br/>Check ['Dev'](https://github.com/DevRob/Udacity-WebDev-project5/tree/master/Dev) folder for commented readable codes.
    
-   For the working page check this link: [Hosted on GitHub pages](http://devrob.github.io/Udacity-WebDev-project5/)
+   For the working page check this link: [Neighborhood app](http://devrob.github.io/Udacity-WebDev-project5/)
 
 ###Project Overview:
 
