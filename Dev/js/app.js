@@ -379,28 +379,32 @@ $(function() {
 
           });
 
-          document.getElementById('reviewlink').addEventListener("click", function(){
-            /*
-              open review page
-            */
-            self.placeReviews([]);
-            self.placeInFocus(place);
-            var reviews = [];
-            place.reviews.forEach(function(review) {
-                if (review.text !== "") {
-                  reviews.push(review);
-                }
-            });
+          var reviewlink = document.getElementById('reviewlink');
 
-            self.placeReviews(reviews);
+          if (reviewlink) {
+            reviewlink.addEventListener("click", function(){
+              /*
+                open review page
+              */
+              self.placeReviews([]);
+              self.placeInFocus(place);
+              var reviews = [];
+              place.reviews.forEach(function(review) {
+                  if (review.text !== "") {
+                    reviews.push(review);
+                  }
+              });
 
-            $('#review-page').show();
-            $('#reviews').children().show();
-            $('#close-review').click(function() {
-              $('#reviews').children().hide();
-              $('#review-page').hide();
+              self.placeReviews(reviews);
+
+              $('#review-page').show();
+              $('#reviews').children().show();
+              $('#close-review').click(function() {
+                $('#reviews').children().hide();
+                $('#review-page').hide();
+              });
             });
-          });
+          }
         }
       });
       google.maps.event.addListener(infowindow,'closeclick',function(){
