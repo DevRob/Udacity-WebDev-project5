@@ -1,10 +1,10 @@
-<DOCTYPE html>
+<!DOCTYPE html>
 <html>
   <head>
-    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" charset="utf-8">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/style.css" media="screen" title="no title" charset="utf-8">
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places"></script>
+    <link rel="stylesheet" href="css/style.css" media="screen" title="no title">
     <title>ThereUR</title>
   </head>
   <body>
@@ -20,7 +20,7 @@
     <div id="results" group="controls">
 
       <div class="title">
-        <img height="30px" style="margin: 15px" src="images/info.jpg">
+        <img height="30px" style="margin: 15px" src="images/info.jpg" alt="info">
         <h2>Nearby places</h2>
       </div>
 
@@ -43,10 +43,10 @@
               <div data-bind="if: $data.rating">
 
                 <div>
-                  <span class="rating-number" data-bind="text: $data.rating"/></span>
+                  <span class="rating-number" data-bind="text: $data.rating"></span>
 
                   <div style="display: inline;" data-bind="foreach: $root.rateImg($data)">
-                    <img class="rate-star" data-bind="attr:{src: star}" />
+                    <img class="rate-star" data-bind="attr:{src: star}" alt="*">
                   </div>
 
                 </div>
@@ -62,10 +62,10 @@
 
             <p>
               <span data-bind="if: $data.photos">
-                <img data-bind="attr:{src: photos[0].getUrl({maxHeight: 80})}" />
+                <img data-bind="attr:{src: photos[0].getUrl({maxHeight: 80})}" alt="photo">
               </span>
               <span data-bind="ifnot: $data.photos">
-                <img style="height: 80" src="images/nophoto.jpg" />
+                <img style="height: 80" src="images/nophoto.jpg" alt="photo">
               </span>
             </p>
 
@@ -82,7 +82,7 @@
       <div id="filters" class="btn-group" data-bind="foreach: icons" role="group" aria-label="plane">
         <!--placeholder for filter buttons-->
         <button type="button" class="btn btn-default">
-          <img width="23px" data-bind="attr: {src: icon}"/>
+          <img width="23px" data-bind="attr: {src: icon}" alt="icon">
         </button><br>
       </div>
       <button id="hide" type="core" class="btn btn-default" style="display: block">
@@ -91,11 +91,11 @@
     </div>
 
     <div id="photoViewer" style="display: none;">
-      <img id="close-photo" class="navButton" src="images/close_button.png"/>
-      <img id="prev" class="navButton" src="images/prev_button.png"/>
-      <img id="next" class="navButton" src="images/next_button.png"/>
+      <img id="close-photo" class="navButton" src="images/close_button.png" alt="X">
+      <img id="prev" class="navButton" src="images/prev_button.png" alt="<">
+      <img id="next" class="navButton" src="images/next_button.png" alt=">">
       <div id="frame" data-bind="foreach: placePhotos">
-        <img class="photo" style="margin: 0 1 0 1px;" data-bind="attr:{id: $index, src: $data.getUrl({maxHeight: 600})}" />
+        <img class="photo" style="margin: 0 1 0 1px;" data-bind="attr:{id: $index, src: $data.getUrl({maxHeight: 600})}" alt="photo">
       </div>
       <span id="photoCounter" class="navButton"></span>
     </div>
@@ -103,7 +103,7 @@
     <!--review page -->
     <div id="review-page" style="display: none;">
 
-      <img id="close-review" class="navButton" src="images/close_button.png"/>
+      <img id="close-review" class="navButton" src="images/close_button.png" alt="X">
       <div id="review-container">
 
         <div id="review-title" data-bind="with: placeInFocus">
@@ -120,10 +120,10 @@
 
             <div>
               <span></span>
-              <span class="rating-number" style="font-size: 25px;" data-bind="text: $data.rating"/></span>
+              <span class="rating-number" style="font-size: 25px;" data-bind="text: $data.rating"></span>
 
               <div style="display: inline;" data-bind="foreach: $root.rateImg($data)">
-                <img style="height: 25px;" class="rate-star" data-bind="attr:{src: star}" />
+                <img style="height: 25px;" class="rate-star" data-bind="attr:{src: star}" alt="*">
               </div>
             </div>
 
@@ -132,10 +132,10 @@
         <div id="reviews" data-bind="foreach: placeReviews">
           <strong style="display: inline" data-bind="text: $data.author_name"></strong>
           <div style="display: inline">
-            <span class="rating-number" data-bind="text: $data.rating"/></span>
+            <span class="rating-number" data-bind="text: $data.rating"></span>
 
             <div style="display: inline;" data-bind="foreach: $root.rateImg($data)">
-              <img class="rate-star" data-bind="attr:{src: star}" />
+              <img class="rate-star" data-bind="attr:{src: star}" alt="*">
             </div>
 
           </div>
@@ -149,8 +149,9 @@
       </div>
     </div> <!--end review page -->
     <!-- load scripts -->
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places" async defer></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-    <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
     <script type="text/javascript" src="http://knockoutjs.com/downloads/knockout-3.3.0.js"></script>
     <script type="text/javascript" src="js/googlePlaceTypes.js"></script>
     <script type="text/javascript" src="js/app.js"></script>
