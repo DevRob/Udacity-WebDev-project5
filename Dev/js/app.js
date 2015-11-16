@@ -9,7 +9,7 @@ $(function() {
         categories = [],
         //styles = [],
         styledMap,
-        marker_animation = google.maps.Animation.DROP,
+        marker_animation = null
         today = new Date();
 
     self.nearByPlaces = ko.observableArray([]); //container for object returned by google map places API nearby search service
@@ -77,9 +77,10 @@ $(function() {
       /*
         filter markers and places based on keyword
       */
-      var places = [];
-      var keyword = self.keyword().toLowerCase();
-      var actualPlaces = [];
+      var places = [],
+          keyword = self.keyword().toLowerCase(),
+          actualPlaces = [],
+          width = window.innerWidth;
 
       if (self.places().length < 2) {
         actualPlaces = self.nearByPlaces();
@@ -97,7 +98,13 @@ $(function() {
           }
         }
       } else {
-        places = actualPlaces;
+          if (width < 995) {
+            places = actualPlaces.slice(0, 12);
+          }
+          else {
+            places = actualPlaces
+          }
+
       }
       addMarkers(places);
       return places;
@@ -129,6 +136,7 @@ $(function() {
         pixelOffset: new google.maps.Size(-23, -10),
       });
 
+      marker_animation = google.maps.Animation.DROP;
       styledMap = new google.maps.StyledMapType(styles,{name: "Styled Map"});
       map.mapTypes.set('map_style', styledMap);
       map.setMapTypeId('map_style');
@@ -247,6 +255,8 @@ $(function() {
       /*
         add markers to the map
       */
+      var iconSize = Math.sqrt($(window).width()) + 20;
+
       self.markers().forEach(function(marker) {
         // Clear out the old markers.
         marker.setMap(null);
@@ -257,20 +267,23 @@ $(function() {
       places.forEach(function(place) {
         var icon = {
           url: place.icon,
-          size: new google.maps.Size(71, 71),
+          size: new google.maps.Size(iconSize, iconSize),
           origin: new google.maps.Point(0, 0),
-          anchor: new google.maps.Point(17, 34),
-          scaledSize: new google.maps.Size(25, 25)
+          anchor: new google.maps.Point(iconSize/4, iconSize/2),
+          scaledSize: new google.maps.Size(iconSize / 2.8, iconSize / 2.8)
         };
 
         // Create a marker for each place.
         var marker = new google.maps.Marker({
-          map: map,
-          icon: icon,
-          title: place.name,
-          animation: marker_animation,
-          position: place.geometry.location
-        });
+              map: map,
+              icon: icon,
+              title: place.name,
+              animation: marker_animation,
+              position: place.geometry.location
+            }),
+            width = window.innerWidth,
+            offsetX = 0.0065,
+            offsetY = 0.003;
 
         marker.addListener('click', function() {
           self.markers().forEach(function(marker) {
@@ -280,7 +293,12 @@ $(function() {
           if (marker.getAnimation() !== null) {
             marker.setAnimation(null);
           } else {
+              if (width < 995) {
+              offsetX = 0;
+              offsetY = 0.022;
+            }
             marker.setAnimation(google.maps.Animation.BOUNCE);
+            map.panTo({lat: marker.position.lat() + offsetY, lng: marker.position.lng() + offsetX});
           }
         });
 
@@ -306,7 +324,7 @@ $(function() {
             /*
               dynamically generated info window content
             */
-            '<div id="infoWindow" style="width: 220px; font-size: 14px; display: none;"><p><h3>' + place.name + '</h3></p>' +
+            '<div id="infoWindow" style="width: 200px; font-size: 14px; display: none;"><p><h3>' + place.name + '</h3></p>' +
             '<hr>' +
             '<p><span style="font-size: 15px">' + place.formatted_address + '</span></p>' +
 
@@ -501,7 +519,7 @@ $(function() {
             }else {
                 wikiTag.innerHTML = '<span>' + response.query.pages[page].extract.substring(0, 60) +
                 "..." + '</span><a style="display: block;" href=http://en.wikipedia.org/?curid=' + response.query.pages[page].pageid +
-                ' target="_blank">read more on wikipedia</a>'
+                ' target="_blank">read more on wikipedia</a>';
             }
           }
           clearTimeout(wikiTimeOut);
@@ -513,20 +531,11 @@ $(function() {
       /*
         trigger click event to markers when list item is clicked
       */
-      var name = place.name.toLowerCase(),
-          width = window.innerWidth,
-          offsetX = 0.0065,
-          offsetY = 0.003;
-
-      if (width < 995) {
-        offsetX = 0;
-        offsetY = 0.006;
-      }
+      var name = place.name.toLowerCase();
 
       self.markers().forEach(function(marker) {
         if (marker.title.toLowerCase() === name) {
           google.maps.event.trigger(marker, 'click');
-          map.setCenter({lat: marker.position.J + offsetY, lng: marker.position.M + offsetX});
         }
       });
     };

@@ -1,5 +1,6 @@
 
-html, body {
+html,
+body {
   height: 100%;
   margin: 0;
   padding: 0;
@@ -32,7 +33,7 @@ h3 {
 ul {
   list-style-type: none;
   padding: 0;
-  margin: 0 3 0px;
+  margin: 0 3px 0;
   height: 98%;
   overflow-y  : scroll;
 }
@@ -75,11 +76,6 @@ strong {
 
 #search-bar input:focus {
   background-color: white;
-}
-
-#search-button {
-  height: 40px;
-  width: 60px;
 }
 
 #map-canvas {
@@ -148,7 +144,6 @@ strong {
   background: -o-linear-gradient(left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.9) 18%, rgba(0,0,0,0.69) 47%, rgba(0,0,0,0.9) 82%, rgba(0,0,0,0.9) 100%);
   background: -ms-linear-gradient(left, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.9) 18%, rgba(0,0,0,0.69) 47%, rgba(0,0,0,0.9) 82%, rgba(0,0,0,0.9) 100%);
   background: linear-gradient(to right, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.9) 18%, rgba(0,0,0,0.69) 47%, rgba(0,0,0,0.9) 82%, rgba(0,0,0,0.9) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#000000', GradientType=1 );
 }
 
 #btn-toolbar {
@@ -156,7 +151,6 @@ strong {
   bottom: 10%;
   background-color: #8bb2d2;
   border: 5px;
-  border-color: #8bb2d2;
 }
 
 #review-container {
@@ -192,7 +186,11 @@ strong {
 }
 
 #review-container::-webkit-scrollbar-thumb:hover {
-  background-color: #2a4d69
+  background-color: #2a4d69;
+}
+
+.btn-toolbar-img {
+  width: 70%;
 }
 
 .longtext {
@@ -208,8 +206,8 @@ strong {
   max-width: 400px;
   overflow-x: hidden;
   overflow-y: auto;
-  margin: 5 0 5 0px;
-  padding: 2;
+  margin: 5px 0 5px 0;
+  padding: 2px;
   height: 410px;
 }
 
@@ -262,7 +260,7 @@ strong {
 }
 
 .col-md-4 {
-  padding: 0 15 0 0px;
+  padding: 0 15px 0 0;
 }
 
 .photo {
@@ -277,20 +275,6 @@ strong {
     margin-right: -50%;
     transform: translate(-50%, -50%);
     -webkit-user-select: none;
-}
-
-.photoScroll {
-  display: flex;
-  width: 80%;
-  height: 400px;
-  background-color: grey;
-  position: absolute;
-  z-index: 110;
-  top: 0;
-  margin: 250 0 250 0px;
-  left: 10%;
-  overflow-x: scroll;
-  -webkit-overflow-scrolling: touch;
 }
 
 .navButton {
@@ -311,13 +295,14 @@ strong {
 
 .rate-star {
   height: 14px;
-  padding: 1 0 2 0px;
+  padding: 1px 0 2px 0;
 }
 
 .rating-number {
   color: #df6d15;
   padding-right: 3px;
   vertical-align: middle;
+  margin-left: 6px;
 }
 
 .greytext {
@@ -329,40 +314,16 @@ strong {
 
 @media screen and (max-width: 995px) {
   #results {
-    position: absolute;
-    top: initial;
-    right: initial;
-    bottom: 0px;
-    left: 0px;
-    width: 100%;
-    margin: 5px;
-    height: 200px;
-    overflow: initial;
-  }
-
-  .infolist {
-    display: flex;
-    list-style: none;
-    max-width: none;
-    overflow-x: visible;
-    overflow-y: hidden;
-    height: 65%;
-  }
-
-  .col-md-4 {
     display: none;
   }
 
-  .row {
-    display: inline;
-    width: 250px;
-    height: 50px;
-
+  .btn-toolbar-img {
+    width: 170%;
   }
 
   button {
-    width: 45px;
-    height: 35px;
+    width: 35px;
+    height: 30px;
   }
 
   li {
@@ -372,7 +333,7 @@ strong {
   }
 
   #btn-toolbar {
-    bottom: 260px;
+    bottom: 150px;
   }
 
   #next, #prev, #photoCounter{
@@ -382,10 +343,15 @@ strong {
   @media screen and (max-width: 540px) {
     #search-bar {
       width: 64%;
+      left: 20px;
     }
 
     #review-container {
       max-width: 90%;
+    }
+
+    .btn-toolbar-button {
+      width: 15px;
     }
   }
 }

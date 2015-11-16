@@ -20,7 +20,7 @@
     <div id="results" group="controls">
 
       <div class="title">
-        <img height="30px" style="margin: 15px" src="images/info.jpg" alt="info">
+        <img style="height: 30px; margin: 15px" src="images/info.jpg" alt="info">
         <h2>Nearby places</h2>
       </div>
 
@@ -82,7 +82,7 @@
       <div id="filters" class="btn-group" data-bind="foreach: icons" role="group" aria-label="plane">
         <!--placeholder for filter buttons-->
         <button type="button" class="btn btn-default">
-          <img width="23px" data-bind="attr: {src: icon}" alt="icon">
+          <img class="btn-toolbar-img" data-bind="attr: {src: icon}" alt="icon">
         </button><br>
       </div>
       <button id="hide" type="core" class="btn btn-default" style="display: block">
@@ -95,7 +95,7 @@
       <img id="prev" class="navButton" src="images/prev_button.png" alt="<">
       <img id="next" class="navButton" src="images/next_button.png" alt=">">
       <div id="frame" data-bind="foreach: placePhotos">
-        <img class="photo" style="margin: 0 1 0 1px;" data-bind="attr:{id: $index, src: $data.getUrl({maxHeight: 600})}" alt="photo">
+        <img class="photo" style="margin: 0 1px 0 1px;" data-bind="attr:{id: $index, src: $data.getUrl({maxHeight: 600})}" alt="photo">
       </div>
       <span id="photoCounter" class="navButton"></span>
     </div>
@@ -148,8 +148,22 @@
 
       </div>
     </div> <!--end review page -->
+
+    <!--div class="slider">
+      <img src="images/prev_button.png" class="left-arrow">
+      <img src="images/next_button.png" class="right-arrow">
+      <ul class="holder" data-bind="foreach: displayedPlaces()">
+        <li class="slide" data-bind="click: $root.clickMarker">
+          <hr>
+          <p><span class="placename" data-bind="text: $data.name"></span></p>
+          <p class="placecategory"><span data-bind="text: $root.formattedType($data)"></span></p>
+        </li>
+      </ul>
+      <span class="no-result">No Result Found</span-->
+      <!--<span class="no-result"data-bind="visible: !filteredList().length">No Result Found</span>-->
+    <!--/div-->
     <!-- load scripts -->
-    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places" async defer></script>
+    <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places" defer></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
     <script type="text/javascript" src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.js"></script>
     <script type="text/javascript" src="http://knockoutjs.com/downloads/knockout-3.3.0.js"></script>
