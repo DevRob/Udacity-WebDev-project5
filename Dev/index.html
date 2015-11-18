@@ -62,10 +62,10 @@
 
             <p>
               <span data-bind="if: $data.photos">
-                <img data-bind="attr:{src: photos[0].getUrl({maxHeight: 80})}" alt="photo">
+                <img style="float: right;" data-bind="attr:{src: photos[0].getUrl({maxHeight: 80})}" alt="photo">
               </span>
               <span data-bind="ifnot: $data.photos">
-                <img style="height: 80" src="images/nophoto.jpg" alt="photo">
+                <img style="height: 80px;" src="images/nophoto.jpg" alt="photo">
               </span>
             </p>
 
@@ -74,7 +74,12 @@
         </li>
       </ul>
     </div><!-- end of place searcs result -->
-
+    <div id="prev-list" class="navigator" group="controls">
+      <img class="navButton" src="images/prev_button.png" alt="<">
+    </div>
+    <div  id="next-list" class="navigator" group="controls">
+      <img class="navButton" src="images/next_button.png" alt=">">
+    </div>
     <div id="btn-toolbar" group="controls">
       <button id="reset" type="core" class="btn btn-default" style="display: block">
         <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
@@ -149,19 +154,6 @@
       </div>
     </div> <!--end review page -->
 
-    <!--div class="slider">
-      <img src="images/prev_button.png" class="left-arrow">
-      <img src="images/next_button.png" class="right-arrow">
-      <ul class="holder" data-bind="foreach: displayedPlaces()">
-        <li class="slide" data-bind="click: $root.clickMarker">
-          <hr>
-          <p><span class="placename" data-bind="text: $data.name"></span></p>
-          <p class="placecategory"><span data-bind="text: $root.formattedType($data)"></span></p>
-        </li>
-      </ul>
-      <span class="no-result">No Result Found</span-->
-      <!--<span class="no-result"data-bind="visible: !filteredList().length">No Result Found</span>-->
-    <!--/div-->
     <!-- load scripts -->
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&signed_in=true&libraries=places" defer></script>
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
