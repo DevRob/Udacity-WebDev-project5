@@ -12,6 +12,8 @@ $(function() {
         marker_animation = null
         today = new Date();
 
+    var winWidth = $( window ).width();
+
     self.nearByPlaces = ko.observableArray([]); //container for object returned by google map places API nearby search service
     self.places = ko.observableArray([]); //container for object returned by google map places API searchBox service
     self.markers = ko.observableArray([]); //container for marker objects
@@ -49,7 +51,8 @@ $(function() {
       iconSet.forEach(function(icon) {
         iconDict.push({"icon": icon});
       });
-      return iconDict;
+
+      return iconDict.slice(0, 8);
     });
 
     self.rateImg = function(place) {
@@ -98,8 +101,8 @@ $(function() {
           }
         }
       } else {
-          if (width < 995) {
-            places = actualPlaces.slice(0, 12);
+          if (width < 500) {
+            places = actualPlaces.slice(0, 12); //number of hits reduced for smaller device.
           }
           else {
             places = actualPlaces
@@ -283,7 +286,7 @@ $(function() {
             }),
             width = window.innerWidth,
             offsetX = 0.0065,
-            offsetY = 0.003;
+            offsetY = 0.005;
 
         marker.addListener('click', function() {
           self.markers().forEach(function(marker) {
@@ -293,12 +296,13 @@ $(function() {
           if (marker.getAnimation() !== null) {
             marker.setAnimation(null);
           } else {
-              if (width < 995) {
-              offsetX = 0;
-              offsetY = 0.022;
+              if (width < 800) {
+              offsetX = -0.004;
+              offsetY = 0.015;
             }
             marker.setAnimation(google.maps.Animation.BOUNCE);
             map.panTo({lat: marker.position.lat() + offsetY, lng: marker.position.lng() + offsetX});
+            console.log(offsetX, offsetY);
           }
         });
 
@@ -537,6 +541,7 @@ $(function() {
         if (marker.title.toLowerCase() === name) {
           google.maps.event.trigger(marker, 'click');
         }
+      console.log("zoom: ", map.getZoom());
       });
     };
 
@@ -571,10 +576,54 @@ $(function() {
       categories = [];
       getNearbyPlaces(map.getCenter());
     });
+
+    $('#prev-list').children().hide();
+
+    $('#prev-list').children().click(function() {
+      var number = $('.infolist').scrollLeft() / (winWidth - 26);
+      if (number === parseInt(number, 10)) {
+        mobileBrowser(-1)
+      } else {
+        mobileBrowser(0)
+      }
+    });
+
+    $('#next-list').children().click(function() {
+      mobileBrowser(1)
+    });
+
+    function mobileBrowser(direction) {
+      var $infolist = $('.infolist');
+      var dist = $('.infolist').scrollLeft();
+      var placeIndex = (parseInt(dist / (winWidth  - 26)));
+
+      placeCount = $('.infolist').children('li').length;
+      placeIndex += direction;
+
+      $infolist.animate({
+      scrollLeft: placeIndex * winWidth - placeIndex * 26
+      }, 800);
+    }
+
+    $('.infolist').scroll(function() {
+      if ($('.infolist').scrollLeft() < winWidth / 3) {
+        $('#prev-list').children().hide();
+      } else if ($('.infolist').scrollLeft() > ($('.infolist').children('li').length - 2) * winWidth) {
+        $('#next-list').children().hide();
+      } else {
+        $('#prev-list').children().show();
+        $('#next-list').children().show();
+      }
+    })
+
+    $('.col-md-8').css('width', winWidth - 2 * ($('.navigator').width() + 25));
+    if ($( window ).width() < 800) {
+      $('.row').css('width', winWidth);
+    }
+
   }
 
   ko.applyBindings(new nhViewModel());
-
   $('#hide').click(function() {
     /*
       handle btn-toolbar click events
@@ -590,5 +639,4 @@ $(function() {
       $(this).siblings('div').animate({width: "toggle"}, 500);
       $(this).children('span').attr('class', glyph);
     });
-
 });
