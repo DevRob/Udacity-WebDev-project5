@@ -5,7 +5,7 @@ $(function() {
     var self = this,
         map,
         infowindow,
-        mapCenter = {lat: 53.339821, lng: -6.2362889999999425}, // default map center
+        mapCenter = {lat: 42.3601, lng: -71.0589}, // default map center
         categories = [],
         //styles = [],
         styledMap,
@@ -285,8 +285,7 @@ $(function() {
               position: place.geometry.location
             }),
             width = window.innerWidth,
-            offsetX = 0.0065,
-            offsetY = 0.005;
+            height = window.innerHeight;
 
         marker.addListener('click', function() {
           self.markers().forEach(function(marker) {
@@ -296,13 +295,9 @@ $(function() {
           if (marker.getAnimation() !== null) {
             marker.setAnimation(null);
           } else {
-              if (width < 800) {
-              offsetX = -0.004;
-              offsetY = 0.015;
-            }
             marker.setAnimation(google.maps.Animation.BOUNCE);
-            map.panTo({lat: marker.position.lat() + offsetY, lng: marker.position.lng() + offsetX});
-            console.log(offsetX, offsetY);
+            map.panTo(marker.position);
+            map.panBy(-20, -1 * (height / 2 - 100));
           }
         });
 
@@ -319,23 +314,28 @@ $(function() {
         get details about place corresponded to the clicked marker and build the infowindow
       */
       var service = new google.maps.places.PlacesService(map);
+      var infoWidth = 200;
+      if ($(window).width() < 800) {
+        infoWidth = 170;
+      }
       service.getDetails({
         placeId: place.place_id
       }, function (place, status) {
+        getFourSquare(1);
         getWikiExtract(place);
         if (status === google.maps.places.PlacesServiceStatus.OK) {
           infowindow.setContent(
             /*
               dynamically generated info window content
             */
-            '<div id="infoWindow" style="width: 200px; font-size: 14px; display: none;"><p><h3>' + place.name + '</h3></p>' +
+            '<div id="infoWindow" style="width: ' + infoWidth + 'px; font-size: 14px; display: none;"><p><h3>' + place.name + '</h3></p>' +
             '<hr>' +
-            '<p><span style="font-size: 15px">' + place.formatted_address + '</span></p>' +
+            '<p><span style="font-size: 14px">' + place.formatted_address + '</span></p>' +
 
             '<p><span style="color: #4a7ea7; font-weight: bold;">' + getOpeningHrs(place)  + '</span></p>'+
             '<br>' +
             '<div id="wiki" style="white-space: normal;"><span></span></div>' +
-            '<br>' +
+            '<hr style="background: #d2d1d1;">' +
             getRating(place) +
 
             '<p><span>' + getPhone(place) + '</span></p>' +
@@ -375,11 +375,13 @@ $(function() {
                 update which photo to be shown
               */
               photoIdx += direction;
+
               if (photoIdx === 0) {
                 $('#prev').hide();
                 $('#next').show();
-              } else if (photoIdx == numberOfPhotos - 1){
+              } else if (photoIdx === numberOfPhotos - 1){
                 $('#next').hide();
+                $('#prev').show();
               } else {
                 $('#prev').show();
                 $('#next').show();
@@ -501,6 +503,17 @@ $(function() {
       return '<div id="photoLink"></div>';
     }
 
+    function getFourSquare(bounds) {
+      var lat = 42.3601, lng = -71.0589;
+      foursquareBaseUri = "https://api.foursquare.com/v2/venues/explore?ll=";
+      baseLocation = lat + ", " + lng;
+      extraParams = "&limit=18&section=topPicks&day=any&time=any&locale=en&&client_id=PMDCA1TH4CXRVBSLMBTPME2OBYL4G2FY5JZJ1SHXPW5T50ZL&client_secret=ZYQZSU5EZP3T0PRYJASI0N5X12ORCCI5113ENQOQAKIR1AAP&v=20151119"//oauth_token=5WJZ5GSQURT4YEG251H42KKKOWUNQXS5EORP2HGGVO4B14AB&v=20141121";
+      foursquareQueryUri = foursquareBaseUri + baseLocation + extraParams;
+      $.getJSON(foursquareQueryUri, function(data) {
+      console.log(data.response.groups[0].items);
+    });
+    }
+
     function getWikiExtract(place) {
       /*
         get wikipedia page extract and link based on place name
@@ -602,13 +615,13 @@ $(function() {
 
       $infolist.animate({
       scrollLeft: placeIndex * winWidth - placeIndex * 26
-      }, 800);
+    }, 1000);
     }
 
     $('.infolist').scroll(function() {
-      if ($('.infolist').scrollLeft() < winWidth / 3) {
+      if ($(this).scrollLeft() < winWidth / 3) {
         $('#prev-list').children().hide();
-      } else if ($('.infolist').scrollLeft() > ($('.infolist').children('li').length - 2) * winWidth) {
+      } else if ($(this).scrollLeft() > ($(this).children('li').length - 2) * winWidth) {
         $('#next-list').children().hide();
       } else {
         $('#prev-list').children().show();
@@ -616,10 +629,29 @@ $(function() {
       }
     })
 
-    $('.col-md-8').css('width', winWidth - 2 * ($('.navigator').width() + 25));
+    $('.col-md-8').css('width', winWidth - 2 * ($('.navigator').width() + 26));
     if ($( window ).width() < 800) {
       $('.row').css('width', winWidth);
     }
+
+    var lastScrollValue = 0;
+    var $infolist = $('.infolist');
+    setInterval(function(){
+      var placeCount = $infolist.children('li').length;
+      var currentScrollValue = $infolist.scrollLeft() / (winWidth - 26);
+      if (currentScrollValue > placeCount - 2) {
+        return
+      }
+      if (currentScrollValue !== parseInt(currentScrollValue, 10)) {
+        if (currentScrollValue < lastScrollValue) {
+          mobileBrowser(0);
+        } else if (currentScrollValue > lastScrollValue) {
+          mobileBrowser(1);
+        }
+        lastScrollValue = Math.round(currentScrollValue);
+      }
+
+    }, 1200);
 
   }
 
