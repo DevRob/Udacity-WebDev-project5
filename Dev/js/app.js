@@ -205,16 +205,18 @@ $(function() {
 
     function processResults(results, status, pagination) {
       var bounds = new google.maps.LatLngBounds();
-      //var placesList = document.getElementById('places');
+      var iterResults = function() {
+        for (var i = 0, place; place = results[i]; i++) {
+          if (place.types[place.types.length - 1] != "political") {
+            self.nearByPlaces.push(place);
+            bounds.extend(place.geometry.location);
+          }
+        }
+      };
       if (status !== google.maps.places.PlacesServiceStatus.OK) {
         return;
       } else {
-          for (var i = 0, place; place = results[i]; i++) {
-            if (place.types[place.types.length - 1] != "political") {
-              self.nearByPlaces.push(place);
-              bounds.extend(place.geometry.location);
-            }
-          }
+        iterResults();
         map.fitBounds(bounds);
       }
       categories = [];
