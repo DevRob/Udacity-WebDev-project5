@@ -347,7 +347,7 @@ $(function() {
             /*
               dynamically generated info window content
             */
-            '<div id="infoWindow" style="width: ' + infoWidth + 'px; font-size: 14px; display: none;"><p><h3>' + place.name + '</h3></p>' +
+            '<div id="infoWindow" style="width:' + infoWidth + 'px; font-size: 14px; display: none;"><p><h3>' + place.name + '</h3></p>' +
             '<hr>' +
             '<p><span style="font-size: 14px">' + place.formatted_address + '</span></p>' +
 
@@ -359,7 +359,7 @@ $(function() {
             '<p><span>' + getPhone(place) + '</span></p>' +
             '<p><div class="longtext"><a href="'+ self.getWeb(place) +'" target="_blank">' + self.getWeb(place) + '<a></div>' +
             '<hr style="background: #ffbccd;">' +
-            '<img src="images/Foursquare-icon.png"><a href="#" id="fourLink" style="display: inline;"> Top 5 place by 4Square</a>'
+            '<img style="width: 20px;" src="images/Foursquare-icon.png"><a href="#" id="fourLink" style="display: inline;"> Top 5 place by 4Square</a>'
           );
 
           infowindow.open(map, marker);
@@ -498,7 +498,7 @@ $(function() {
           }
         }
 
-        return ratingTag + '<a id="reviewlink" style="padding-left: 15px;" href="#"">reviews,</a>';
+        return ratingTag + '<a id="reviewlink" style="padding-left: 10px;" href="#"">reviews,</a>';
       } else {
         return '<span style="font-style: italic;">no rating available</span>';
       }
@@ -532,7 +532,7 @@ $(function() {
       */
       if (place.photos) {
         if (place.photos.length > 1 ) {
-        return '<a style="margin-left: 15px;" id="photoLink" href="#"">photos</a>';
+        return '<a style="margin-left: 5px;" id="photoLink" href="#"">photos</a>';
       }}
       return '<div id="photoLink"></div></div>';
     }
