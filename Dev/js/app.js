@@ -676,6 +676,7 @@ $(function() {
       }
     })
 
+    $('.infolist').css('height', $('.infolist').parent().height() * 0.8);
     screenResize();
     $( window ).resize(function() {
       screenResize();
