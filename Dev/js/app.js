@@ -1,3 +1,14 @@
+/*
+  Adding modulus methode to Number.
+  In JavaScript "%"-called modulus by many programmer and sites like W3Schools, but it's really a remainder function
+  and it DOES NOT behave like modulus with negative numbers.
+  Remainder: https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Arithmetic_Operators#Remainder_()
+  Difference explained in details here: http://www.sitecrafting.com/blog/modulus-remainder
+  NOTE: needed for the function getOpeningHrs() line 481.
+
+*/
+Number.prototype.mod = function(n) { return ((this%n)+n)%n; }
+
 $(function() {
 
   function nhViewModel() {
@@ -22,6 +33,7 @@ $(function() {
     self.placeReviews = ko.observableArray([]); //container for place review objects returned by google map places API getDetails() service
     self.placePhotos = ko.observableArray([]); //container for place photo urls returned by google map places API getDetails() service
     self.placeInFocus = ko.observable(); //place object container when opening photos and reviews via infowindows
+    self.foursquarePlaces = ko.observableArray([]); //container for foursquare API objects
 
     self.address = function(place) {
       /*
@@ -55,11 +67,11 @@ $(function() {
       return iconDict.slice(0, 8);
     });
 
-    self.rateImg = function(place) {
+    self.rateImg = function(rating) {
       /*
         chain together the rating stars based on place rating.
       */
-      var rating = Math.round(place.rating * 2)/2;
+      var rating = Math.round(rating * 2)/2;
       var imgHolder = [];
 
       for (var i = 0; i < parseInt(rating); i++) {
@@ -285,7 +297,14 @@ $(function() {
               position: place.geometry.location
             }),
             width = window.innerWidth,
-            height = window.innerHeight;
+            height = window.innerHeight,
+            offsetX = 150,
+            offsetY = - height / 5;
+
+        if (width < 800) {
+          offsetX = -20;
+          offsetY = -1 * (height / 2 - 100)
+        }
 
         marker.addListener('click', function() {
           self.markers().forEach(function(marker) {
@@ -297,7 +316,7 @@ $(function() {
           } else {
             marker.setAnimation(google.maps.Animation.BOUNCE);
             map.panTo(marker.position);
-            map.panBy(-20, -1 * (height / 2 - 100));
+            map.panBy(offsetX, offsetY);
           }
         });
 
@@ -321,7 +340,7 @@ $(function() {
       service.getDetails({
         placeId: place.place_id
       }, function (place, status) {
-        getFourSquare(1);
+        getFourSquare(place);
         getWikiExtract(place);
         if (status === google.maps.places.PlacesServiceStatus.OK) {
           infowindow.setContent(
@@ -335,13 +354,12 @@ $(function() {
             '<p><span style="color: #4a7ea7; font-weight: bold;">' + getOpeningHrs(place)  + '</span></p>'+
             '<br>' +
             '<div id="wiki" style="white-space: normal;"><span></span></div>' +
-            '<hr style="background: #d2d1d1;">' +
-            getRating(place) +
-
+            '<hr>' +
+            getRating(place) +  getPhotoes(place) + '</div></p>' +
             '<p><span>' + getPhone(place) + '</span></p>' +
-
-            '<p><div class="longtext"><a href="'+ getWeb(place) +'" target="_blank">' + getWeb(place) + '<a></div>' +
-            getPhotoes(place) + '</div></p>'
+            '<p><div class="longtext"><a href="'+ self.getWeb(place) +'" target="_blank">' + self.getWeb(place) + '<a></div>' +
+            '<hr style="background: #ffbccd;">' +
+            '<img src="images/Foursquare-icon.png"><a href="#" id="fourLink" style="display: inline;"> Top 5 place by 4Square</a>'
           );
 
           infowindow.open(map, marker);
@@ -350,7 +368,7 @@ $(function() {
 
           self.placePhotos(place.photos);
 
-          document.getElementById('photoLink').addEventListener("click", function(){
+          document.getElementById('photoLink').addEventListener("click", function() {
             /*
               open photo viewer
             */
@@ -429,8 +447,23 @@ $(function() {
               });
             });
           }
+
+          var foursquareLink = document.getElementById('fourLink');
+
+          if (foursquareLink) {
+            foursquareLink.addEventListener("click", function(){
+              self.foursquarePlaces(getFourSquare(place));
+
+              $('#foursquare-page').show();
+              $('#close-foursquare').click(function() {
+                $('#foursquare').children().hide();
+                $('#foursquare-page').hide();
+              });
+            });
+          }
         }
       });
+
       google.maps.event.addListener(infowindow,'closeclick',function(){
         self.markers().forEach(function(marker) {
           marker.setAnimation(null);
@@ -442,8 +475,9 @@ $(function() {
       /*
         get opening hours from place object
       */
-      if (place.opening_hours) {
-        return place.opening_hours.weekday_text[today.getDay() - 1  ];
+      var openHrs = place.opening_hours;
+      if (openHrs) {
+        return openHrs.weekday_text[(today.getDay() - 1).mod(7)];
       } else {
         return "";
       }
@@ -455,7 +489,7 @@ $(function() {
         add rating stars and review link
       */
       var ratingTag = "";
-      var starHolder = self.rateImg(place);
+      var starHolder = self.rateImg(place.rating);
       if (place.rating) {
         ratingTag = '<div><span style="color: #df6d15; padding-right: 3px;">' + place.rating + '</span>';
         for (var i in starHolder) {
@@ -464,7 +498,7 @@ $(function() {
           }
         }
 
-        return ratingTag + '<a id="reviewlink" style="padding-left: 15px;" href="#"">reviews</a></div>';
+        return ratingTag + '<a id="reviewlink" style="padding-left: 15px;" href="#"">reviews,</a>';
       } else {
         return '<span style="font-style: italic;">no rating available</span>';
       }
@@ -481,7 +515,7 @@ $(function() {
       }
     }
 
-    function getWeb(place) {
+    self.getWeb = function(place) {
       /*
         get website from place object
       */
@@ -498,20 +532,29 @@ $(function() {
       */
       if (place.photos) {
         if (place.photos.length > 1 ) {
-        return '<a id="photoLink" href="#"">photos<a>';
+        return '<a style="margin-left: 15px;" id="photoLink" href="#"">photos</a>';
       }}
-      return '<div id="photoLink"></div>';
+      return '<div id="photoLink"></div></div>';
     }
 
-    function getFourSquare(bounds) {
-      var lat = 42.3601, lng = -71.0589;
-      foursquareBaseUri = "https://api.foursquare.com/v2/venues/explore?ll=";
-      baseLocation = lat + ", " + lng;
-      extraParams = "&limit=18&section=topPicks&day=any&time=any&locale=en&&client_id=PMDCA1TH4CXRVBSLMBTPME2OBYL4G2FY5JZJ1SHXPW5T50ZL&client_secret=ZYQZSU5EZP3T0PRYJASI0N5X12ORCCI5113ENQOQAKIR1AAP&v=20151119"//oauth_token=5WJZ5GSQURT4YEG251H42KKKOWUNQXS5EORP2HGGVO4B14AB&v=20141121";
-      foursquareQueryUri = foursquareBaseUri + baseLocation + extraParams;
-      $.getJSON(foursquareQueryUri, function(data) {
-      console.log(data.response.groups[0].items);
-    });
+    function getFourSquare(place) {
+      var lat = place.geometry.location.lat(), lng = place.geometry.location.lng(),
+      baseUrl = "https://api.foursquare.com/v2/venues/explore?ll=",
+      baseLocation = lat + ", " + lng,
+      extraParams = "&limit=5&section=topPicks&day=any&time=any&locale=en&&client_id=PMDCA1TH4CXRVBSLMBTPME2OBYL4G2FY5JZJ1SHXPW5T50ZL&client_secret=ZYQZSU5EZP3T0PRYJASI0N5X12ORCCI5113ENQOQAKIR1AAP&v=20151119",
+      url = baseUrl + baseLocation + extraParams;
+      $.getJSON(url, function(data) {
+        self.foursquarePlaces(data.response.groups[0].items)
+
+    })
+      .fail(function() {
+        console.log( "foursquare API faild to load" );
+
+      })
+      .always(function() {
+        console.log( "foursquare request finished" );
+      });
+
     }
 
     function getWikiExtract(place) {
@@ -554,7 +597,6 @@ $(function() {
         if (marker.title.toLowerCase() === name) {
           google.maps.event.trigger(marker, 'click');
         }
-      console.log("zoom: ", map.getZoom());
       });
     };
 
@@ -585,12 +627,17 @@ $(function() {
     });
 
     $('#reset').on('click', function() {
+      /*
+        reset categories on hitting refresh button on .btn-toolbar and
+        re-request Nearby places with google API
+      */
       self.places([]);
       categories = [];
       getNearbyPlaces(map.getCenter());
     });
 
     $('#prev-list').children().hide();
+    $('#next-list').children().hide();
 
     $('#prev-list').children().click(function() {
       var number = $('.infolist').scrollLeft() / (winWidth - 26);
@@ -629,9 +676,17 @@ $(function() {
       }
     })
 
-    $('.col-md-8').css('width', winWidth - 2 * ($('.navigator').width() + 26));
-    if ($( window ).width() < 800) {
-      $('.row').css('width', winWidth);
+    screenResize();
+    $( window ).resize(function() {
+      screenResize();
+    });
+
+    function screenResize() {
+      if ($( window ).width() < 800) {
+        $('#next-list').children().show();
+        $('.row').css('width', winWidth);
+        $('.col-md-8').css('width', winWidth - 2 * ($('.navigator').width() + 26));
+      }
     }
 
     var lastScrollValue = 0;
