@@ -7,7 +7,7 @@
   NOTE: needed for the function getOpeningHrs() line 481.
 
 */
-Number.prototype.mod = function(n) { return ((this%n)+n)%n; }
+Number.prototype.mod = function(n) { return ((this%n)+n)%n; };
 
 $(function() {
 
@@ -20,7 +20,7 @@ $(function() {
         categories = [],
         //styles = [],
         styledMap,
-        marker_animation = null
+        marker_animation = null,
         today = new Date();
 
     var winWidth = $( window ).width();
@@ -71,7 +71,7 @@ $(function() {
       /*
         chain together the rating stars based on place rating.
       */
-      var rating = Math.round(rating * 2)/2;
+      rating = Math.round(rating * 2)/2;
       var imgHolder = [];
 
       for (var i = 0; i < parseInt(rating); i++) {
@@ -117,7 +117,7 @@ $(function() {
             places = actualPlaces.slice(0, 12); //number of hits reduced for smaller device.
           }
           else {
-            places = actualPlaces
+            places = actualPlaces;
           }
 
       }
@@ -303,7 +303,7 @@ $(function() {
 
         if (width < 800) {
           offsetX = -20;
-          offsetY = -1 * (height / 2 - 100)
+          offsetY = -1 * (height / 2 - 100);
         }
 
         marker.addListener('click', function() {
@@ -449,7 +449,6 @@ $(function() {
           }
 
           var foursquareLink = document.getElementById('fourLink');
-
           if (foursquareLink) {
             foursquareLink.addEventListener("click", function(){
               self.foursquarePlaces(getFourSquare(place));
@@ -524,7 +523,7 @@ $(function() {
       } else {
         return "";
       }
-    }
+    };
 
     function getPhotoes(place) {
       /*
@@ -544,7 +543,7 @@ $(function() {
       extraParams = "&limit=5&section=topPicks&day=any&time=any&locale=en&&client_id=PMDCA1TH4CXRVBSLMBTPME2OBYL4G2FY5JZJ1SHXPW5T50ZL&client_secret=ZYQZSU5EZP3T0PRYJASI0N5X12ORCCI5113ENQOQAKIR1AAP&v=20151119",
       url = baseUrl + baseLocation + extraParams;
       $.getJSON(url, function(data) {
-        self.foursquarePlaces(data.response.groups[0].items)
+        self.foursquarePlaces(data.response.groups[0].items);
 
     })
       .fail(function() {
@@ -636,28 +635,43 @@ $(function() {
       getNearbyPlaces(map.getCenter());
     });
 
+    /*
+      hide navbuttons for mobile slider
+    */
     $('#prev-list').children().hide();
     $('#next-list').children().hide();
 
     $('#prev-list').children().click(function() {
+      /*
+        handle mobile previous navButton
+      */
       var number = $('.infolist').scrollLeft() / (winWidth - 26);
       if (number === parseInt(number, 10)) {
-        mobileBrowser(-1)
+        mobilSlider(-1);
       } else {
-        mobileBrowser(0)
+        mobilSlider(0);
       }
     });
 
     $('#next-list').children().click(function() {
-      mobileBrowser(1)
+      /*
+        handle mobile next navButton
+      */
+      var number = $('.infolist').scrollLeft() / (winWidth - 26);
+      if (number === parseInt(number, 10)) {
+        mobilSlider(1);
+      } else {
+        mobilSlider(0);
+      }
     });
 
-    function mobileBrowser(direction) {
+    function mobilSlider(direction) {
+      /*
+        animate slider based on direction input.
+      */
       var $infolist = $('.infolist');
       var dist = $('.infolist').scrollLeft();
       var placeIndex = (parseInt(dist / (winWidth  - 26)));
-
-      placeCount = $('.infolist').children('li').length;
       placeIndex += direction;
 
       $infolist.animate({
@@ -666,23 +680,29 @@ $(function() {
     }
 
     $('.infolist').scroll(function() {
+      /*
+        hide/show navButtons based on slider position.
+      */
+      var placeCount = $(this).children('li').length;
       if ($(this).scrollLeft() < winWidth / 3) {
         $('#prev-list').children().hide();
-      } else if ($(this).scrollLeft() > ($(this).children('li').length - 2) * winWidth) {
+      } else if ($(this).scrollLeft() > (placeCount - 2) * winWidth) {
         $('#next-list').children().hide();
       } else {
         $('#prev-list').children().show();
         $('#next-list').children().show();
       }
-    })
+    });
 
-    $('.infolist').css('height', $('.infolist').parent().height() * 0.8);
     screenResize();
     $( window ).resize(function() {
       screenResize();
     });
 
     function screenResize() {
+      /*
+        transform infolist to slider depending on screen size.
+      */
       if ($( window ).width() < 800) {
         $('#next-list').children().show();
         $('.row').css('width', winWidth);
@@ -693,25 +713,38 @@ $(function() {
     var lastScrollValue = 0;
     var $infolist = $('.infolist');
     setInterval(function(){
+      /*
+        checking mobilSlider position every 1200ms and move it to next item found if moved and out of position.
+      */
       var placeCount = $infolist.children('li').length;
       var currentScrollValue = $infolist.scrollLeft() / (winWidth - 26);
       if (currentScrollValue > placeCount - 2) {
-        return
+        return;
       }
       if (currentScrollValue !== parseInt(currentScrollValue, 10)) {
         if (currentScrollValue < lastScrollValue) {
-          mobileBrowser(0);
+          mobilSlider(0);
         } else if (currentScrollValue > lastScrollValue) {
-          mobileBrowser(1);
+          mobilSlider(1);
         }
         lastScrollValue = Math.round(currentScrollValue);
       }
-
     }, 1200);
-
   }
 
   ko.applyBindings(new nhViewModel());
+  $('.infolist').css('height', $('.infolist').parent().height() * 0.8);
+  $('.infolist').each(function() {
+    /*
+      JQuery magic to overcome complex css dependance issues. NOTE: http://imgur.com/gallery/9qzBYbH
+    */
+    var height = $( window ).height(),
+        width = $( window ).width();
+    if (height > width) {
+      $(this).css('height', "60%");
+    }
+  });
+
   $('#hide').click(function() {
     /*
       handle btn-toolbar click events

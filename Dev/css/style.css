@@ -120,7 +120,7 @@ strong {
 
 .results {
   width: 350px;
-  height: 500px;
+  height: 60%;
   border-radius: 3px;
   z-index: 102;
   position: fixed;
@@ -141,7 +141,6 @@ strong {
   background-color: #fffae3;
   position: absolute;
   padding: 30px;
-  max-height: 70%;
   max-width: 40%;
   top: 50%;
   left: 50%;
@@ -182,10 +181,10 @@ strong {
   list-style: none;
   max-width: 400px;
   overflow-x: hidden;
-  overflow-y: auto;
+  overflow-y: scroll;
   margin: 5px 0 5px 0;
   padding: 2px;
-  height: 410px;
+
 }
 
 .infolist::-webkit-scrollbar {
@@ -199,10 +198,6 @@ strong {
   background-color: #4b86b4;
   height: 30px;
   box-shadow: inset 1px 1px 0 rgba(0,0,0,.2),inset 0 -1px 0 rgba(0,0,0,.1);
-}
-
-.infolist::-webkit-scrollbar-thumb:hover {
-  background-color: #2a4d69
 }
 
 .infolist li {
@@ -292,7 +287,6 @@ strong {
 }
 
 .greytext {
-  font-size: 18px;
   color: #989696;
   vertical-align: middle;
   padding-bottom: 15px;
@@ -311,6 +305,13 @@ strong {
 .list {
   width: 80%;
   margin: 0 10% 0 10%;
+}
+
+.logo {
+  float: right;
+  font-size: 11px;
+  color: #767676;
+  margin-top: 15px;
 }
 
 @media screen and (max-width: 800px) {
@@ -386,7 +387,14 @@ strong {
   }
 
   .myContainer {
-    max-width: 90%;
+    height: 60%;
+    max-width: 80%;
+    font-size: 11px;
+    padding: 5px;
+  }
+
+  .infolist {
+    font-size: 11px;
   }
 
   .btn-toolbar-button {
@@ -394,7 +402,6 @@ strong {
   }
 
   .mainListElement {
-    all: initial;
     display: inline-flex;
     padding-left: 20%;
   }
@@ -411,7 +418,6 @@ strong {
   p,
   a {
     white-space: nowrap;
-    overflow: hidden;
     text-overflow: ellipsis;
     font-size: 12px;
   }
@@ -425,9 +431,10 @@ strong {
     font-size: 13px;
   }
 
-  @media screen and (max-height: 470px) {
-    #btn-toolbar {
-      display: none;
-    }
+}
+
+@media screen and (max-height: 470px) {
+  .btn-toolbar {
+    display: none;
   }
 }
