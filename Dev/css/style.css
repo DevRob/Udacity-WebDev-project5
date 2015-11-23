@@ -147,6 +147,7 @@ strong {
   left: 50%;
   margin-right: -50%;
   transform: translate(-50%, -50%);
+  overflow: hidden;
 }
 
 .viewport {
@@ -196,7 +197,7 @@ strong {
 
 .infolist::-webkit-scrollbar-thumb {
   background-color: #4b86b4;
-  min-height: 20%;
+  height: 30px;
   box-shadow: inset 1px 1px 0 rgba(0,0,0,.2),inset 0 -1px 0 rgba(0,0,0,.1);
 }
 
@@ -347,6 +348,19 @@ strong {
     top: 12px;
   }
 
+  #mainInfoList {
+    display: flex;
+    list-style: none;
+    max-width: none;
+    overflow-x: visible;
+    overflow-y: hidden;
+    height: 100%;
+  }
+
+  #mainInfoList::-webkit-scrollbar {
+    display: none;
+  }
+
   .results {
     position: absolute;
     top: initial;
@@ -356,15 +370,6 @@ strong {
     overflow: initial;
     left: 50px;
     width: 100%;
-  }
-
-  .infolist {
-    display: flex;
-    list-style: none;
-    max-width: none;
-    overflow-x: visible;
-    overflow-y: hidden;
-    height: 100%;
   }
 
   .wide_title,
@@ -380,16 +385,18 @@ strong {
     padding: 5px;
   }
 
-  .infolist::-webkit-scrollbar {
-    display: none;
-  }
-
   .myContainer {
     max-width: 90%;
   }
 
   .btn-toolbar-button {
     width: 15px;
+  }
+
+  .mainListElement {
+    all: initial;
+    display: inline-flex;
+    padding-left: 20%;
   }
 
   body {
@@ -399,12 +406,6 @@ strong {
   button {
     width: 35px;
     height: 30px;
-  }
-
-  li {
-    all: initial;
-    display: inline-flex;
-    padding-left: 20%;
   }
 
   p,
