@@ -735,7 +735,7 @@ $(function() {
   }
 
   ko.applyBindings(new nhViewModel());
-  $('.infolist').css('height', $('.infolist').parent().height() * 0.8);
+  $('.infolist').css('height', ($('.infolist').parent().height() - 60) * 0.80);
   $('.infolist').each(function() {
     /*
       JQuery magic to overcome complex css dependance issues. NOTE: http://imgur.com/gallery/9qzBYbH
