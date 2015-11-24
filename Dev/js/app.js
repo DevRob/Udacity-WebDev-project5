@@ -1,12 +1,11 @@
-/*
-  Adding modulus methode to Number.
-  In JavaScript "%"-called modulus by many programmer and sites like W3Schools, but it's really a remainder function
-  and it DOES NOT behave like modulus with negative numbers.
-  Remainder: https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Arithmetic_Operators#Remainder_()
-  Difference explained in details here: http://www.sitecrafting.com/blog/modulus-remainder
-  NOTE: needed for the function getOpeningHrs() line 481.
-
-*/
+/**
+ * Adding modulus methode to Number.
+ * In JavaScript "%"-called modulus by many programmer and sites like W3Schools,
+ *    but it's really a remainder function and it DOES NOT behave like modulus with negative numbers.
+ * Remainder: https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Operators/Arithmetic_Operators#Remainder_()
+ * Difference explained in details here: http://www.sitecrafting.com/blog/modulus-remainder
+ * NOTE: needed for the function getOpeningHrs() line 481.
+ */
 Number.prototype.mod = function(n) { return ((this%n)+n)%n; };
 
 $(function() {
@@ -36,9 +35,9 @@ $(function() {
     self.foursquarePlaces = ko.observableArray([]); //container for foursquare API objects
 
     self.address = function(place) {
-      /*
-        return place address from place object
-      */
+      /**
+       * This function returns place address from place object.
+       */
       if (place.vicinity) {
         return place.vicinity;
       } else {
@@ -47,9 +46,9 @@ $(function() {
     };
 
     self.icons = ko.computed(function() {
-      /*
-        return icons for the btn-toolbar
-      */
+      /**
+       * This is a computed @var {icons}, returns icons for the btn-toolbar.
+       */
       var iconSet = new Set();
       var iconDict = [];
 
@@ -68,9 +67,9 @@ $(function() {
     });
 
     self.rateImg = function(rating) {
-      /*
-        chain together the rating stars based on place rating.
-      */
+      /**
+       * The @function rateImg() chains together the rating stars based on place rating.
+       */
       rating = Math.round(rating * 2)/2;
       var imgHolder = [];
 
@@ -89,9 +88,9 @@ $(function() {
     };
 
     self.displayedPlaces = function() {
-      /*
-        filter markers and places based on keyword
-      */
+      /**
+       * The @function displayedPlaces() filters the markers and places based on keyword.
+       */
       var places = [],
           keyword = self.keyword().toLowerCase(),
           actualPlaces = [],
@@ -126,18 +125,18 @@ $(function() {
     };
 
     self.formattedType = function(data) {
-      /*
-       replace "_ & -" to space and first letter to uppercase in place type
-       example: art_gallery => Art gallery
-      */
+      /**
+       * replace "_" & "-" to space and first letter to uppercase in place type
+       * @example art_gallery => Art gallery
+       */
       var formattedType = data.types[0].replace(/[_-]/g, " ");
       return formattedType.charAt(0).toUpperCase() + formattedType.substr(1, formattedType.length);
     };
 
     function initMap() {
-      /*
-        google map initialization
-      */
+      /**
+       * Google map initialization.
+       */
       var mapOptions = {
         center: mapCenter,
         zoom: 14,
@@ -161,9 +160,9 @@ $(function() {
     initMap();
 
     function getCurrentLocation() {
-      /*
-        Locate user using geolocation
-      */
+      /**
+       * Locate user using geolocation.
+       */
       if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(function(position) {
             mapCenter = {
@@ -190,9 +189,10 @@ $(function() {
     getCurrentLocation();
 
     function getNearbyPlaces(center) {
-      /*
-        google maps places API search pagination request
-      */
+      /**
+       * The @function getNearbyPlaces call google maps places API and search pagination request
+       *    based o the @param {Object[]} center - Latitude and longitude.
+       */
       self.nearByPlaces([]);
 
       var service = new google.maps.places.PlacesService(map);
@@ -223,9 +223,9 @@ $(function() {
     }
 
     function initAutocomplete() {
-      /*
-        google maps places API autocomplete service
-      */
+      /**
+       * Google maps places API autocomplete service.
+       */
       self.places([]);
       // Create the search box and link it to the UI element.
       var input = document.getElementById('search-input');
@@ -269,9 +269,9 @@ $(function() {
     initAutocomplete();
 
     function addMarkers(places) {
-      /*
-        add markers to the map
-      */
+      /**
+       * Add markers to the map. @param {Object[]} places - returned by the google API search.
+       */
       var iconSize = Math.sqrt($(window).width()) + 20;
 
       self.markers().forEach(function(marker) {
@@ -331,9 +331,9 @@ $(function() {
     }
 
     function addInfowindow(place, marker) {
-      /*
-        get details about place corresponded to the clicked marker and build the infowindow
-      */
+      /**
+       * Get details about place corresponded to the clicked marker and build the infowindow.
+       */
       var service = new google.maps.places.PlacesService(map);
       var infoWidth = 200;
       if ($(window).width() < 800) {
@@ -346,9 +346,9 @@ $(function() {
         getWikiExtract(place);
         if (status === google.maps.places.PlacesServiceStatus.OK) {
           infowindow.setContent(
-            /*
-              dynamically generated info window content
-            */
+            /**
+             * Dynamically generated info window content.
+             */
             '<div id="infoWindow" style="width:' + infoWidth + 'px; font-size: 14px; display: none;"><p><h3>' + place.name + '</h3></p>' +
             '<hr>' +
             '<p><span style="font-size: 14px">' + place.formatted_address + '</span></p>' +
@@ -371,9 +371,9 @@ $(function() {
           self.placePhotos(place.photos);
 
           document.getElementById('photoLink').addEventListener("click", function() {
-            /*
-              open photo viewer
-            */
+            /**
+             * Open The photo viewer and navigate throught the list of photos.
+             */
             $('#photoViewer').show();
 
             var numberOfPhotos = place.photos.length;
@@ -391,9 +391,9 @@ $(function() {
             });
 
             function updPhoto(direction) {
-              /*
-                update which photo to be shown
-              */
+              /**
+               * Updates which photo to be shown, @param {number} - direction based on wich navButton pressed.
+               */
               photoIdx += direction;
 
               if (photoIdx === 0) {
@@ -427,9 +427,9 @@ $(function() {
 
           if (reviewlink) {
             reviewlink.addEventListener("click", function(){
-              /*
-                open review page
-              */
+              /**
+               * Opens the review page.
+               */
               self.placeReviews([]);
               self.placeInFocus(place);
               var reviews = [];
@@ -473,9 +473,9 @@ $(function() {
     }
 
     function getOpeningHrs(place) {
-      /*
-        get opening hours from place object
-      */
+      /**
+       * Get opening hours from place object.
+       */
       var openHrs = place.opening_hours;
       if (openHrs) {
         return openHrs.weekday_text[(today.getDay() - 1).mod(7)];
@@ -485,10 +485,10 @@ $(function() {
     }
 
     function getRating(place) {
-      /*
-        get rating from place object and dinamically chain together the rating tag
-        add rating stars and review link
-      */
+      /**
+       * Get rating from place object and dinamically chain together the rating tag
+       *    add rating stars and review link.
+       */
       var ratingTag = "";
       var starHolder = self.rateImg(place.rating);
       if (place.rating) {
@@ -506,9 +506,9 @@ $(function() {
     }
 
     function getPhone(place) {
-      /*
-        get phone number from place object
-      */
+      /**
+       * Get phone number from place object.
+       */
       if (place.international_phone_number) {
         return place.international_phone_number;
       } else {
@@ -517,9 +517,9 @@ $(function() {
     }
 
     self.getWeb = function(place) {
-      /*
-        get website from place object
-      */
+      /**
+       * Get url from place object for the place's website.
+       */
       if (place.website) {
         return place.website;
       } else {
@@ -528,9 +528,9 @@ $(function() {
     };
 
     function getPhotoes(place) {
-      /*
-        get photo urls from place object
-      */
+      /**
+       * Get photo urls from place object.
+       */
       if (place.photos) {
         if (place.photos.length > 1 ) {
         return '<a style="margin-left: 5px;" id="photoLink" href="#"">photos</a>';
@@ -549,19 +549,29 @@ $(function() {
 
     })
       .fail(function() {
-        console.log( "foursquare API faild to load" );
+        /**
+         * Handle API load error. Instead of alert() I pass a
+         *    "fake" JSON to the observable array tailored as an error msg.
+         */
+        console.log( "The foursquare API faild to load." );
+        self.foursquarePlaces([{
+          "venue": {"name": "FOURSQUARE API failed to load.",
+                  "categories" : [{"name" : ""}],
+                  "location" : {"formattedAddress": ""}},
+          "tips": [{"text": "Try reload the page!"}]
+        }]);
 
       })
       .always(function() {
-        console.log( "foursquare request finished" );
+        console.log( "The foursquare request finished." );
       });
 
     }
 
     function getWikiExtract(place) {
-      /*
-        get wikipedia page extract and link based on place name
-      */
+      /**
+       * Get wikipedia page extract and link based on place name.
+       */
       var searchParam = place.name.replace(/[\s,]/g, "%20");
       var wiki = "https://en.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles=" + searchParam;
 
@@ -589,9 +599,9 @@ $(function() {
     }
 
     self.clickMarker = function(place) {
-      /*
-        trigger click event to markers when list item is clicked
-      */
+      /**
+       * Triggers click event to markers when list item is clicked
+       */
       var name = place.name.toLowerCase();
 
       self.markers().forEach(function(marker) {
@@ -602,11 +612,11 @@ $(function() {
     };
 
     $('#filters').on('click', 'button', function () {
-      /*
-        call google map API nearby serach with altered categories based on which icon pressed
-        unfortunatelly there is an inconsistency with how google call place types and the
-        "corresponding image" see example typename = gym,  imgname = fitness
-      */
+      /**
+       * Calls google map API nearby serach with altered categories based on which icon pressed.
+       * Unfortunatelly there is an inconsistency with how google calls place types and the
+       *    "corresponding image" see @example typename = gym,  imgname = fitness
+       */
       self.places([]);
        marker_animation = google.maps.Animation.DROP;
        var fileName = $(this).children('img').attr('src').split("/");
@@ -614,11 +624,11 @@ $(function() {
        categories = [];
 
        if (rawCategory == "fitness") {
-         categories.push("gym");         // <--not nice but necessary because the inconsistency
+         categories.push("gym");         // <--not nice but necessary because the inconsistency.
        }
 
        for (var idx in googlePlaceTypes) {
-         //fetch the place type from googlePlaceTypes based on icon url name
+         //Fetch the place type from googlePlaceTypes based on icon url name.
          if (googlePlaceTypes[idx].toLowerCase().indexOf(rawCategory.substring(0, 4)) != -1) {
                categories.push(googlePlaceTypes[idx]);
          }
@@ -628,25 +638,22 @@ $(function() {
     });
 
     $('#reset').on('click', function() {
-      /*
-        reset categories on hitting refresh button on .btn-toolbar and
-        re-request Nearby places with google API
-      */
+      /**
+       * Resets categories on hitting refresh button on .btn-toolbar and
+       * re-request Nearby places with google API
+       */
       self.places([]);
       categories = [];
       getNearbyPlaces(map.getCenter());
     });
 
-    /*
-      hide navbuttons for mobile slider
-    */
-    $('#prev-list').children().hide();
+    $('#prev-list').children().hide();    //hide navbuttons for mobile slider
     $('#next-list').children().hide();
 
     $('#prev-list').children().click(function() {
-      /*
-        handle mobile previous navButton
-      */
+      /**
+       * Handle mobile previous navButton.
+       */
       var number = $('.infolist').scrollLeft() / (winWidth - 26);
       if (number === parseInt(number, 10)) {
         mobilSlider(-1);
@@ -656,9 +663,9 @@ $(function() {
     });
 
     $('#next-list').children().click(function() {
-      /*
-        handle mobile next navButton
-      */
+      /**
+       * Handle mobile next navButton.
+       */
       var number = $('.infolist').scrollLeft() / (winWidth - 26);
       if (number === parseInt(number, 10)) {
         mobilSlider(1);
@@ -668,9 +675,9 @@ $(function() {
     });
 
     function mobilSlider(direction) {
-      /*
-        animate slider based on direction input.
-      */
+      /**
+       * Animates slider based on direction input.
+       */
       var $infolist = $('.infolist');
       var dist = $('.infolist').scrollLeft();
       var placeIndex = (parseInt(dist / (winWidth  - 26)));
@@ -682,9 +689,9 @@ $(function() {
     }
 
     $('.infolist').scroll(function() {
-      /*
-        hide/show navButtons based on slider position.
-      */
+      /**
+       * Hide/show navButtons based on slider position.
+       */
       var placeCount = $(this).children('li').length;
       if ($(this).scrollLeft() < winWidth / 3) {
         $('#prev-list').children().hide();
@@ -702,9 +709,9 @@ $(function() {
     });
 
     function screenResize() {
-      /*
-        transform infolist to slider depending on screen size.
-      */
+      /**
+       * Transforms infolist to slider depending on screen size.
+       */
       if ($( window ).width() < 800) {
         $('#next-list').children().show();
         $('.row').css('width', winWidth);
@@ -715,9 +722,9 @@ $(function() {
     var lastScrollValue = 0;
     var $infolist = $('.infolist');
     setInterval(function(){
-      /*
-        checking mobilSlider position every 1200ms and move it to next item found if moved and out of position.
-      */
+      /**
+       * Checking mobilSlider position every 1200ms and move it to next item found if moved and out of position.
+       */
       var placeCount = $infolist.children('li').length;
       var currentScrollValue = $infolist.scrollLeft() / (winWidth - 26);
       if (currentScrollValue > placeCount - 2) {
@@ -737,9 +744,9 @@ $(function() {
   ko.applyBindings(new nhViewModel());
   $('.infolist').css('height', ($('.infolist').parent().height() - 60) * 0.80);
   $('.infolist').each(function() {
-    /*
-      JQuery magic to overcome complex css dependance issues. NOTE: http://imgur.com/gallery/9qzBYbH
-    */
+    /**
+     * JQuery magic to overcome complex css dependance issues. NOTE: http://imgur.com/gallery/9qzBYbH
+     */
     var height = $( window ).height(),
         width = $( window ).width();
     if (height > width) {
@@ -748,9 +755,9 @@ $(function() {
   });
 
   $('#hide').click(function() {
-    /*
-      handle btn-toolbar click events
-    */
+    /**
+     * Handle .btn-toolbar click events.
+     */
       var glyph = '', currentGlyph = $(this).children('span').attr('class');
       if (currentGlyph.slice(29) === 'left') {
         glyph = currentGlyph.replace('left', 'right');
