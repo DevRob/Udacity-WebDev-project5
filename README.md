@@ -1,15 +1,15 @@
-###Neighborhood map project
+##Neighborhood map project
 
-##Setting up Project:
+###Setting up Project:
    I'm using node.js and gulp so all the original, readable and commented HTML/CSS/JavaScript/image files are in the 'Dev' folder. The system set up in a way that if I start gulp it will start a listener and will compress any element changed in the 'Dev' folder and move it in the right place in the project folder. Check ['Dev'](https://github.com/DevRob/Udacity-WebDev-project5/tree/master/Dev) folder for commented readable codes.
    
    For the working page check this link: [Neighborhood app](http://devrob.github.io/Udacity-WebDev-project5/)
 
-##Project Overview:
+###Project Overview:
 
    Develop a single page application featuring a map of a neighborhood you would like to visit. Add additional functionality to this map including highlighted locations, third-party data about those locations and various ways to browse the content.
 
-##How to use the app
+###How to use the app
 
 * Search bar:
 
@@ -33,7 +33,7 @@ you can reset the search with the refresh button and it will clear the category 
    You can find useful information here like the name of the place, address, opening hours, wikipedia extract/link(if existing) rating and review link.
 also there is a photo viewer if the place has photos you can hit the "photos" link to check out the pictures uploaded by google users.
 
-##Resources and tools I used:
+###Resources and tools I used:
 
 * [knockoutjs](http://knockoutjs.com/)
 * [bootstrap] (http://getbootstrap.com/)
