@@ -26,7 +26,7 @@ you can reset the search with the refresh button and it will clear the category 
 
 * Place list:
 
-   On the right you can find the places correspond to the markers. Clicking on the will focus the map on the place and will open an infowindow. you can filter this list with the search bar simply start typing no need to hit enter the filter works on keydown.
+   On the right you can find the places correspond to the markers. Clicking on them will focus the map on the place and will open an infowindow. you can filter this list with the search bar simply start typing no need to hit enter the filter works on keydown.
 
 * Info window:
 
